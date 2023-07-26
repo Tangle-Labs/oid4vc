@@ -6,7 +6,7 @@ const stringifyNestedObject = (obj: any): string => {
     return encodeURIComponent(JSON.stringify(camelToSnakeCaseRecursive(obj)));
 };
 
-const camelToSnakeCaseRecursive = (input: any): any => {
+export const camelToSnakeCaseRecursive = (input: any): any => {
     if (input === null || typeof input !== "object") {
         return input;
     }

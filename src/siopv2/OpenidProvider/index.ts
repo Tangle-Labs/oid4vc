@@ -1,12 +1,11 @@
 import { PEX } from "@sphereon/pex";
-import { bytesToString, stringToBytes } from "../../utils/bytes";
 import { parseQueryStringToJson } from "../../utils/query";
 import { SiopRequest } from "../index.types";
 import { OPOptions } from "./index.types";
 import * as didJWT from "did-jwt";
-import nacl from "tweetnacl";
 import { PresentationDefinitionV2 } from "@sphereon/pex-models";
 import axios from "axios";
+import { buildSigner } from "../../utils/signer";
 
 export class OpenidProvider {
     did: string;
@@ -18,12 +17,7 @@ export class OpenidProvider {
         this.did = args.did;
         this.kid = args.kid;
         this.privKeyHex = args.privKeyHex;
-        const key = nacl.box.keyPair.fromSecretKey(
-            stringToBytes(this.privKeyHex)
-        );
-        const secret = this.privKeyHex + bytesToString(key.publicKey);
-        const keyPair = stringToBytes(secret);
-        this.signer = didJWT.EdDSASigner(keyPair);
+        this.signer = buildSigner(this.privKeyHex);
     }
 
     async createIDTokenResponse(request: SiopRequest) {
@@ -92,7 +86,6 @@ export class OpenidProvider {
         );
 
         presentation.verifiableCredential = selectedCreds;
-        console.log(presentation);
         const vp_token = await this.encodeJwtVp(presentation, request);
         return {
             vp_token,

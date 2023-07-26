@@ -5,9 +5,14 @@ import * as didJWT from "did-jwt";
 import { resolver } from "../../utils/resolver";
 import { PEX } from "@sphereon/pex";
 import { PresentationDefinitionV2 } from "@sphereon/pex-models";
+import { buildSigner } from "../../utils/signer";
 
 export class RelyingParty {
     private metadata: RPOptions;
+    private did: string;
+    private kid: string;
+    private privKeyHex: string;
+    private signer: didJWT.Signer;
 
     /**
      * Create a new instance of the Relying Party class
@@ -17,6 +22,10 @@ export class RelyingParty {
 
     constructor(args: RPOptions) {
         this.metadata = args;
+        this.did = args.did;
+        this.kid = args.kid;
+        this.privKeyHex = args.privKeyHex;
+        this.signer = buildSigner(this.privKeyHex);
     }
 
     /**
@@ -81,6 +90,20 @@ export class RelyingParty {
                 generatePresentationSubmission: true,
             });
         }
+    }
+
+    async createAuthToken(did: string) {
+        const token = await didJWT.createJWT(
+            {
+                aud: did,
+                exp: Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60,
+                iat: Math.floor(Date.now() / 1000),
+                iss: this.did,
+            },
+            { issuer: this.did, signer: this.signer },
+            { alg: "EdDSA", kid: this.kid }
+        );
+        return token;
     }
 }
 

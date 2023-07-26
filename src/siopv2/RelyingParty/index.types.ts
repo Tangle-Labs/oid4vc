@@ -1,4 +1,5 @@
 import { PresentationDefinitionV2 } from "@sphereon/pex-models";
+import { KeyPairRequirements } from "../../common/index.types";
 
 export type AuthResponse = {
     id_token?: string;
@@ -9,11 +10,12 @@ export type AuthResponse = {
 export type RPOptions = {
     redirectUri: string;
     clientId: string;
+
     clientMetadata: {
         subjectSyntaxTypesSupported: string[];
         idTokenSigningAlgValuesSupported: SigningAlgs[];
     };
-};
+} & KeyPairRequirements;
 
 type IDTokenRequestByValueOptions = {
     requestBy: "value";

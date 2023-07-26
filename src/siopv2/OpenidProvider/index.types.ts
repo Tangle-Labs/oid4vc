@@ -1,5 +1,3 @@
-export type OPOptions = {
-    did: string;
-    kid: string;
-    privKeyHex: string;
-};
+import { KeyPairRequirements } from "../../common/index.types";
+
+export type OPOptions = {} & KeyPairRequirements;

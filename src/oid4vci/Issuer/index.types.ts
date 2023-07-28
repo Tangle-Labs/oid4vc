@@ -10,7 +10,6 @@ export type VcIssuerOptions = {
     cryptographicBindingMethodsSupported: CryptographicMethods[];
     cryptographicSuitesSupported: CryptographicSuites[];
     proofTypesSupported: ProofTypes[];
-    preAuthTokenIssuer: `did:${string}`;
     store: IIssuerStore<IssuerStoreData>;
 } & KeyPairRequirements;
 

@@ -9,9 +9,8 @@ import {
 import { generatePin } from "../../utils/pin";
 import { TokenRequest } from "../Holder/index.types";
 import * as didJWT from "did-jwt";
-import { IotaDIDResolver } from "../../utils/resolver";
 import { buildSigner } from "../../utils/signer";
-import { KeyPairRequirements } from "../../common/index.types";
+import { RESOLVER } from "../../config";
 
 export class VcIssuer {
     metadata: Omit<VcIssuerOptions, "store" | "did" | "kid" | "privKeyHex">;
@@ -55,6 +54,17 @@ export class VcIssuer {
         const { credentialType, format, ...options } = args;
 
         const id = nanoid();
+
+        const code = await didJWT.createJWT(
+            { id, iat: Math.floor(Date.now() / 1000) },
+            {
+                issuer: this.did,
+                signer: this.signer,
+                expiresIn: 24 * 60 * 60,
+            },
+            { alg: "EdDSA", kid: this.kid }
+        );
+
         const offer = {
             credentialIssuer: this.metadata.credentialIssuer,
             ...options,
@@ -64,7 +74,12 @@ export class VcIssuer {
                     credentialType,
                 },
             ],
-            issuerState: id,
+            grants: {
+                "urn:ietf:params:oauth:grant-type:pre-authorized_code": {
+                    "pre-authorized_code": code,
+                    user_pin_required: true,
+                },
+            },
         };
         const pin = generatePin();
 
@@ -75,31 +90,28 @@ export class VcIssuer {
         return { request, pin };
     }
 
-    async createTokenResponse(response: TokenRequest) {
-        const { pin } = await this.store.getById(response.issuer_state);
+    async createTokenResponse(request: TokenRequest) {
+        console.log(request);
         if (
-            !response.grant_type ||
-            !response.issuer_state ||
-            !response["pre-authorized_code"] ||
-            !response.user_pin
+            !request.grant_type ||
+            !request["pre-authorized_code"] ||
+            !request.user_pin
         )
             throw new Error("invalid_request");
-        if (pin !== response.user_pin) throw new Error("invalid_grant");
-        const {
-            signer,
-            payload: { aud },
-        } = await didJWT
-            .verifyJWT(response["pre-authorized_code"], {
-                resolver: new IotaDIDResolver(),
+        const { signer, payload } = await didJWT
+            .verifyJWT(request["pre-authorized_code"], {
+                resolver: RESOLVER,
                 policies: { aud: false },
             })
-            .catch(() => {
+            .catch((e) => {
                 throw new Error("invalid_request");
             });
-        if (signer.controller !== this.metadata.preAuthTokenIssuer)
-            throw new Error("invalid_request");
+        const { pin } = await this.store.getById(payload.id);
+
+        if (pin !== request.user_pin) throw new Error("invalid_grant");
+        if (signer.controller !== this.did) throw new Error("invalid_token");
         const access_token = await didJWT.createJWT(
-            { aud, iat: Math.floor(Date.now() / 1000) },
+            { aud: payload.aud, iat: Math.floor(Date.now() / 1000) },
             {
                 issuer: this.did,
                 signer: this.signer,
@@ -125,12 +137,13 @@ export class VcIssuer {
         if (!token) throw new Error("invalid_request");
         const { payload, signer } = await didJWT.verifyJWT(token, {
             policies: { aud: false },
+            resolver: RESOLVER,
         });
         if (
             signer.controller !== this.did ||
-            payload.exp > Math.floor(Date.now() / 1000)
+            payload.exp < Math.floor(Date.now() / 1000)
         )
-            throw new Error("Invalid Token");
+            throw new Error("invalid_token");
         return {
             format: "jwt_vc_json",
             credential,

@@ -98,6 +98,7 @@ export class OpenidProvider {
             request.split("siopv2://idtoken")[1]
         ) as SiopRequest;
         let response: Record<string, any>;
+        console.log(requestOptions);
         if (requestOptions.responseType === "id_token") {
             response = await this.createIDTokenResponse(requestOptions);
         } else if (requestOptions.responseType === "vp_token") {
@@ -108,10 +109,11 @@ export class OpenidProvider {
                 requestOptions
             );
         }
+        await axios.post(requestOptions.redirectUri, response).catch(() => {
+            throw new Error("unable to send response");
+        });
+
         return response;
-        // return axios.post(requestOptions.redirectUri, response).catch(() => {
-        //     throw new Error("unable to send response");
-        // });
     }
 }
 

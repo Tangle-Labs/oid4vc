@@ -8,7 +8,6 @@ export class VcHolder {
             grant_type: "urn:ietf:params:oauth:grant-type:pre-authorized_code",
             "pre-authorized_code": args.preAuthCode,
             user_pin: args.userPin,
-            issuer_state: args.issuerState,
         };
     }
 
@@ -42,18 +41,17 @@ export class VcHolder {
         return data.credential;
     }
 
-    async getCredentialFromOffer(
-        credentialOffer: string,
-        code: string,
-        pin: number
-    ) {
-        const { issuerState } = this.parseCredentialOffer(credentialOffer);
+    async getCredentialFromOffer(credentialOffer: string, pin: number) {
+        const { grants } = this.parseCredentialOffer(credentialOffer);
         const metadata = await this.retrieveMetadata(credentialOffer);
         const tokenRequest = await this.createTokenRequest({
-            preAuthCode: code,
-            userPin: pin,
-            issuerState,
+            preAuthCode:
+                grants["urn:ietf:params:oauth:grant-type:pre-authorized_code"][
+                    "pre-authorized_code"
+                ],
+            userPin: Number(pin),
         });
+        console.log("here?");
         const tokenResponse = await axios.post(
             new URL(
                 "/token",
@@ -61,8 +59,10 @@ export class VcHolder {
             ).toString(),
             tokenRequest
         );
+        console.log("here??");
+
         return this.retrieveCredential(
-            metadata.credential_issuer,
+            metadata.credential_endpoint,
             tokenResponse.data.access_token
         );
     }

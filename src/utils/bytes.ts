@@ -1,3 +1,5 @@
+import { Buffer } from "buffer";
+
 export const bytesToString = (bytes: Uint8Array) => {
     return Buffer.from(bytes).toString("hex");
 };

@@ -2,10 +2,10 @@ import { nanoid } from "nanoid";
 import { objectToQueryString } from "../../utils/query";
 import { CreateRequestOptions, RPOptions, AuthResponse } from "./index.types";
 import * as didJWT from "did-jwt";
-import { resolver } from "../../utils/resolver";
 import { PEX } from "@sphereon/pex";
 import { PresentationDefinitionV2 } from "@sphereon/pex-models";
 import { buildSigner } from "../../utils/signer";
+import { RESOLVER } from "../../config";
 
 export class RelyingParty {
     private metadata: RPOptions;
@@ -39,7 +39,6 @@ export class RelyingParty {
             ...this.metadata,
             scope: "openid",
             responseMode: "post",
-            nonce: nanoid(),
         };
 
         const requestQuery = objectToQueryString(requestData);
@@ -47,9 +46,9 @@ export class RelyingParty {
         return `siopv2://idtoken${requestQuery}`;
     }
 
-    private async validateJwt(jwt: string): Promise<Record<string, any>> {
+    async validateJwt(jwt: string): Promise<Record<string, any>> {
         const result = await didJWT.verifyJWT(jwt, {
-            resolver: resolver,
+            resolver: RESOLVER,
             policies: {
                 aud: false,
             },
@@ -60,7 +59,7 @@ export class RelyingParty {
 
     async verifyAuthResponse(
         authResponse: AuthResponse,
-        presentationDefinition: PresentationDefinitionV2
+        presentationDefinition?: PresentationDefinitionV2
     ) {
         if (
             !(

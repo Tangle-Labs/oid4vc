@@ -6,18 +6,21 @@ type ProofTypes = "jwt";
 
 export type VcIssuerOptions = {
     credentialEndpoint: string;
+    batchCredentialEndpoint: string;
     credentialIssuer: string;
     cryptographicBindingMethodsSupported: CryptographicMethods[];
     cryptographicSuitesSupported: CryptographicSuites[];
     proofTypesSupported: ProofTypes[];
     store: IIssuerStore<IssuerStoreData>;
+    logo_uri?: string;
+    client_name?: string;
 } & KeyPairRequirements;
 
 export type IssuerStoreData = { id: string; pin: number };
 
 export type CreateCredentialOfferOptions = {
-    format: "jwt_vc_json";
-    credentialType: string;
+    credentials: string[];
+    pinRequired?: boolean;
 };
 
 export interface IIssuerStore<T> {

@@ -15,6 +15,8 @@ export type RPOptions = {
     clientMetadata: {
         subjectSyntaxTypesSupported: string[];
         idTokenSigningAlgValuesSupported: SigningAlgs[];
+        logo_uri?: string;
+        client_name?: string;
     };
 } & KeyPairRequirements;
 

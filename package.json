@@ -11,20 +11,15 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@iota/identity-node": "file:./node_modules/@iota/identity-wasm/node",
-    "@iota/identity-wasm": "0.6.0",
-    "@iota/identity-web": "file:./node_modules/@iota/identity-wasm/web",
     "@sphereon/pex": "^2.1.0",
     "@sphereon/pex-models": "^2.0.3",
     "axios": "^1.4.0",
     "buffer": "^6.0.3",
     "did-jwt": "^7.2.4",
     "did-resolver": "^4.1.0",
-    "jose": "^4.14.4",
     "nanoid": "^3.0.0",
     "tweetnacl": "^1.0.3",
-    "tweetnacl-util": "^0.15.1",
-    "uint8arrays": "3.1.1"
+    "tweetnacl-util": "^0.15.1"
   },
   "scripts": {
     "dev": "nodemon --watch './**/*.ts' --exec 'node --experimental-specifier-resolution=node --trace-warnings --loader ts-node/esm' src/test.ts"

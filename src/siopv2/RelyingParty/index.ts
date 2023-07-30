@@ -34,9 +34,10 @@ export class RelyingParty {
 
     createRequest(args: CreateRequestOptions) {
         const { requestBy, ...requestOptions } = args;
+        const { privKeyHex, did, kid, ...metadata } = this.metadata;
         const requestData = {
             ...requestOptions,
-            ...this.metadata,
+            ...metadata,
             scope: "openid",
             responseMode: "post",
         };

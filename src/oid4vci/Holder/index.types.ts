@@ -1,6 +1,6 @@
 export type CreateTokenRequestOptions = {
     preAuthCode: string;
-    userPin: number;
+    userPin?: number;
 };
 
 export type TokenRequest = {

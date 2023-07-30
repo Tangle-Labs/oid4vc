@@ -61,6 +61,26 @@ export class OpenidProvider {
         return vc;
     }
 
+    async getCredentialsFromRequest(request: string, credentials: any[]) {
+        const pex = new PEX();
+        const requestOptions = parseQueryStringToJson(
+            request.split("siopv2://idtoken")[1]
+        ) as SiopRequest;
+
+        if (requestOptions.responseType !== "vp_token")
+            throw new Error("invalid response type");
+        const selected = pex.selectFrom(
+            requestOptions.presentationDefinition,
+            credentials
+        );
+        console.log(requestOptions.presentationDefinition);
+        console.log("are present", selected.areRequiredCredentialsPresent);
+        console.log(selected.matches);
+        console.log(requestOptions.presentationDefinition);
+
+        return selected.verifiableCredential;
+    }
+
     async createVPTokenResponse(
         presentationDefinition: PresentationDefinitionV2,
         credentials: any[],
@@ -109,6 +129,7 @@ export class OpenidProvider {
                 requestOptions
             );
         }
+        response = { ...response, nonce: requestOptions.nonce };
         await axios.post(requestOptions.redirectUri, response).catch(() => {
             throw new Error("unable to send response");
         });

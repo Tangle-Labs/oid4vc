@@ -1,3 +1,5 @@
-export * from "./Holder/index";
-export * from "./Issuer/index";
+export * from "./Holder";
+export * from "./Issuer";
+export * from "./Holder/index.types";
+export * from "./Issuer/index.types";
 //# sourceMappingURL=index.js.map

@@ -76,7 +76,7 @@ export class VcHolder {
         const { grants, credentials, credentialIssuer } =
             this.parseCredentialOffer(credentialOffer);
         const metadata = await this.retrieveMetadata(credentialOffer);
-        const createTokenPayload = {
+        const createTokenPayload: { preAuthCode: any; userPin?: number } = {
             preAuthCode:
                 grants["urn:ietf:params:oauth:grant-type:pre-authorized_code"][
                     "pre-authorized_code"

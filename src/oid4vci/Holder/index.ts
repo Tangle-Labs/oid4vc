@@ -1,14 +1,24 @@
 import axios from "axios";
 import { parseQueryStringToJson } from "../../utils/query";
 import { CreateTokenRequestOptions } from "./index.types";
+import { KeyPairRequirements } from "../../common/index.types";
+import * as didJWT from "did-jwt";
+import { buildSigner } from "../../utils";
 
 export class VcHolder {
+    private holderKeys: KeyPairRequirements;
+    private signer: didJWT.Signer;
+
+    constructor(args: KeyPairRequirements) {
+        this.holderKeys = args;
+        this.signer = buildSigner(args.privKeyHex);
+    }
+
     async createTokenRequest(args: CreateTokenRequestOptions) {
         const response = {
             grant_type: "urn:ietf:params:oauth:grant-type:pre-authorized_code",
             "pre-authorized_code": args.preAuthCode,
         };
-        console.log("res", response);
         // @ts-ignore
         if (args.userPin) response.user_pin = args.userPin;
         return response;
@@ -33,11 +43,19 @@ export class VcHolder {
     async retrieveCredential(
         path: string,
         accessToken: string,
-        credentials: string[]
+        credentials: string[],
+        proof: string
     ): Promise<string[]> {
         const { data } = await axios.post(
             path,
-            { format: "jwt_vc_json", credentials },
+            {
+                format: "jwt_vc_json",
+                credentials,
+                proof: {
+                    proof_type: "jwt",
+                    jwt: proof,
+                },
+            },
             {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -55,10 +73,9 @@ export class VcHolder {
     }
 
     async getCredentialFromOffer(credentialOffer: string, pin?: number) {
-        const { grants, credentials } =
+        const { grants, credentials, credentialIssuer } =
             this.parseCredentialOffer(credentialOffer);
         const metadata = await this.retrieveMetadata(credentialOffer);
-        console.log("meta", metadata);
         const createTokenPayload = {
             preAuthCode:
                 grants["urn:ietf:params:oauth:grant-type:pre-authorized_code"][
@@ -74,7 +91,6 @@ export class VcHolder {
             createTokenPayload.userPin = Number(pin);
 
         const tokenRequest = await this.createTokenRequest(createTokenPayload);
-        console.log("token request", tokenRequest);
 
         const tokenResponse = await axios.post(
             new URL(
@@ -82,6 +98,15 @@ export class VcHolder {
                 metadata.authorization_server ?? metadata.credential_issuer
             ).toString(),
             tokenRequest
+        );
+
+        const token = await didJWT.createJWT(
+            {
+                aud: credentialIssuer,
+                nonce: tokenResponse.data.c_nonce,
+            },
+            { signer: this.signer, issuer: this.holderKeys.did },
+            { alg: "EdDSA", kid: this.holderKeys.kid }
         );
 
         const endpoint =
@@ -92,7 +117,8 @@ export class VcHolder {
         return this.retrieveCredential(
             endpoint,
             tokenResponse.data.access_token,
-            credentials
+            credentials,
+            token
         );
     }
 }

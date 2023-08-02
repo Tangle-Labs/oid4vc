@@ -24,6 +24,8 @@ type IDTokenRequestByValueOptions = {
     requestBy: "value";
     responseType: "id_token";
     nonce: string;
+    overrideLogo?: string;
+    overrideClientName?: string;
 };
 
 type VPTokenRequestByValueOptions = {
@@ -31,12 +33,16 @@ type VPTokenRequestByValueOptions = {
     responseType: "vp_token";
     presentationDefinition: PresentationDefinitionV2;
     nonce: string;
+    overrideLogo?: string;
+    overrideClientName?: string;
 };
 
 export type SiopRequestByReference = {
     requestBy: "reference";
     requestUri: string;
     nonce: string;
+    overrideLogo: string;
+    overrideClientName?: string;
 };
 
 export type CreateRequestOptions =

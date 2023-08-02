@@ -129,17 +129,19 @@ export class VcIssuer {
             access_token,
             token_type: "bearer",
             expires_in: 86400,
+            c_nonce: nanoid(),
+            c_nonce_expires_in: 86400,
         };
     }
 
-    async createSendCredentialsResponse({
+    async validateCredentialsResponse({
         token,
-        credentials,
+        proof,
     }: {
         token?: string;
-        credentials: string[];
+        proof?: string;
     }) {
-        if (!token) throw new Error("invalid_request");
+        if (!token || !proof) throw new Error("invalid_request");
         const { payload, signer } = await didJWT.verifyJWT(token, {
             policies: { aud: false },
             resolver: RESOLVER,
@@ -149,6 +151,19 @@ export class VcIssuer {
             payload.exp < Math.floor(Date.now() / 1000)
         )
             throw new Error("invalid_token");
+        const { signer: didSigner } = await didJWT.verifyJWT(proof, {
+            policies: { aud: false },
+            resolver: RESOLVER,
+        });
+
+        return didSigner.controller;
+    }
+
+    async createSendCredentialsResponse({
+        credentials,
+    }: {
+        credentials: string[];
+    }) {
         let response;
         if (credentials.length > 1) {
             // @ts-ignore

@@ -33,7 +33,12 @@ export class RelyingParty {
      */
 
     createRequest(args: CreateRequestOptions) {
-        const { requestBy, ...requestOptions } = args;
+        const {
+            requestBy,
+            overrideLogo,
+            overrideClientName,
+            ...requestOptions
+        } = args;
         const { privKeyHex, did, kid, ...metadata } = this.metadata;
         const requestData = {
             ...requestOptions,
@@ -41,6 +46,10 @@ export class RelyingParty {
             scope: "openid",
             responseMode: "post",
         };
+        requestData.clientMetadata.logo_uri =
+            overrideLogo ?? requestData.clientMetadata.logo_uri;
+        requestData.clientMetadata.client_name =
+            overrideClientName ?? requestData.clientMetadata.client_name;
 
         const requestQuery = objectToQueryString(requestData);
 
@@ -86,9 +95,16 @@ export class RelyingParty {
                 : await this.validateJwt(vp.verifiableCredential);
             const presentation = { ...vp, verifiableCredential };
             const pex = new PEX();
-            pex.evaluatePresentation(presentationDefinition, presentation, {
-                generatePresentationSubmission: true,
-            });
+            const { areRequiredCredentialsPresent } = pex.evaluatePresentation(
+                presentationDefinition,
+                presentation,
+                {
+                    generatePresentationSubmission: true,
+                }
+            );
+
+            if (areRequiredCredentialsPresent === "error")
+                throw new Error("Invalid Credentials Shared");
         }
     }
 

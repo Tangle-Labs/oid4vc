@@ -73,10 +73,8 @@ export class OpenidProvider {
             requestOptions.presentationDefinition,
             credentials
         );
-        console.log(requestOptions.presentationDefinition);
-        console.log("are present", selected.areRequiredCredentialsPresent);
-        console.log(selected.matches);
-        console.log(requestOptions.presentationDefinition);
+        if (selected.areRequiredCredentialsPresent === "error")
+            throw new Error("credentials not found");
 
         return selected.verifiableCredential;
     }
@@ -118,7 +116,6 @@ export class OpenidProvider {
             request.split("siopv2://idtoken")[1]
         ) as SiopRequest;
         let response: Record<string, any>;
-        console.log(requestOptions);
         if (requestOptions.responseType === "id_token") {
             response = await this.createIDTokenResponse(requestOptions);
         } else if (requestOptions.responseType === "vp_token") {

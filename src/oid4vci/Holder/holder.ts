@@ -3,7 +3,7 @@ import { parseQueryStringToJson } from "../../utils/query";
 import { CreateTokenRequestOptions } from "./index.types";
 import { KeyPairRequirements } from "../../common/index.types";
 import * as didJWT from "did-jwt";
-import { buildSigner } from "../../utils";
+import { buildSigner } from "../../utils/utils";
 
 export class VcHolder {
     private holderKeys: KeyPairRequirements;

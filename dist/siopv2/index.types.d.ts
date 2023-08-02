@@ -1,5 +1,5 @@
 import { PresentationDefinitionV2 } from "@sphereon/pex-models";
-import { RPOptions } from "./RelyingParty";
+import { RPOptions } from "./RelyingParty/rp";
 type IdTokenRequestByValue = RPOptions & {
     nonce: string;
     redirectUri: string;

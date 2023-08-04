@@ -1,11 +1,15 @@
-import { nanoid } from "nanoid";
 import { objectToSnakeCaseQueryString } from "../../utils/query";
-import { CreateRequestOptions, RPOptions, AuthResponse } from "./index.types";
+import {
+    CreateRequestOptions,
+    RPOptions,
+    AuthResponse,
+    SiopRequestResult,
+} from "./index.types";
 import * as didJWT from "did-jwt";
 import { PEX } from "@sphereon/pex";
 import { PresentationDefinitionV2 } from "@sphereon/pex-models";
 import { buildSigner } from "../../utils/signer";
-import { RESOLVER } from "../../config";
+import { Resolvable } from "did-resolver";
 
 export class RelyingParty {
     private metadata: RPOptions;
@@ -13,6 +17,7 @@ export class RelyingParty {
     private kid: string;
     private privKeyHex: string;
     private signer: didJWT.Signer;
+    private resolver: Resolvable;
 
     /**
      * Create a new instance of the Relying Party class
@@ -26,19 +31,17 @@ export class RelyingParty {
         this.kid = args.kid;
         this.privKeyHex = args.privKeyHex;
         this.signer = buildSigner(this.privKeyHex);
+        this.resolver = args.resolver;
     }
 
     /**
      * Create a new SIOP Request
      */
 
-    createRequest(args: CreateRequestOptions) {
-        const {
-            requestBy,
-            overrideLogo,
-            overrideClientName,
-            ...requestOptions
-        } = args;
+    async createRequest(
+        args: CreateRequestOptions
+    ): Promise<SiopRequestResult> {
+        const { requestBy, ...requestOptions } = args;
         const { privKeyHex, did, kid, ...metadata } = this.metadata;
         const requestData = {
             ...requestOptions,
@@ -46,28 +49,38 @@ export class RelyingParty {
             scope: "openid",
             responseMode: "post",
         };
-        requestData.clientMetadata.logo_uri =
-            overrideLogo ?? requestData.clientMetadata.logo_uri;
-        requestData.clientMetadata.client_name =
-            overrideClientName ?? requestData.clientMetadata.client_name;
         const { clientId, ...requestParams } = requestData;
 
-        const request = didJWT.createJWT(
+        let requestQuery: {
+            clientId: string;
+            request?: string;
+            requestUri?: string;
+        } = {
+            clientId,
+        };
+
+        const request = await didJWT.createJWT(
             { ...requestParams },
             { issuer: this.did, signer: this.signer },
             { kid: this.kid, alg: "EdDSA" }
         );
-        const requestQuery = objectToSnakeCaseQueryString({
-            clientId,
-            request: request,
-        });
 
-        return `siopv2://idtoken${requestQuery}`;
+        requestBy === "value"
+            ? (requestQuery.request = request)
+            : (requestQuery.requestUri = args.requestUri);
+
+        return {
+            uri: `siopv2://idtoken${objectToSnakeCaseQueryString(
+                requestQuery
+            )}`,
+            request: request,
+            requestOptions: requestParams,
+        };
     }
 
     async validateJwt(jwt: string): Promise<Record<string, any>> {
         const result = await didJWT.verifyJWT(jwt, {
-            resolver: RESOLVER,
+            resolver: this.resolver,
             policies: {
                 aud: false,
             },

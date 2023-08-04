@@ -1,3 +1,4 @@
+import { Resolvable } from "did-resolver";
 import { KeyPairRequirements } from "../../common/index.types";
 
 type CryptographicSuites = "EdDSA";
@@ -14,14 +15,27 @@ export type VcIssuerOptions = {
     store: IIssuerStore<IssuerStoreData>;
     logo_uri?: string;
     client_name?: string;
+    resolver: Resolvable;
 } & KeyPairRequirements;
 
 export type IssuerStoreData = { id: string; pin: number };
 
-export type CreateCredentialOfferOptions = {
+type CreateCredentialOfferByValue = {
+    requestBy: "value";
     credentials: string[];
     pinRequired?: boolean;
 };
+
+type CreateCredentialOfferByReference = {
+    requestBy: "reference";
+    credentialOfferUri: string;
+    credentials: string[];
+    pinRequired?: boolean;
+};
+
+export type CreateCredentialOfferOptions =
+    | CreateCredentialOfferByReference
+    | CreateCredentialOfferByValue;
 
 export interface IIssuerStore<T> {
     create: (payload: T) => Promise<T> | T;

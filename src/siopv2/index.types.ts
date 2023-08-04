@@ -1,7 +1,8 @@
 import { PresentationDefinitionV2 } from "@sphereon/pex-models";
 import { RPOptions } from "./RelyingParty/rp";
 
-type RequestByReference = { clientId: string; requestUri: string };
+type IdTokenRequestByReference = { requestUri: string } & IdTokenRequestByValue;
+type VpTokenRequestByReference = { requestUri: string } & VpTokenRequestByValue;
 
 type IdTokenRequestByValue = RPOptions & {
     nonce: string;
@@ -18,4 +19,8 @@ type VpTokenRequestByValue = RPOptions & {
     presentationDefinition: PresentationDefinitionV2;
 };
 
-export type SiopRequest = VpTokenRequestByValue | IdTokenRequestByValue;
+export type SiopRequest =
+    | VpTokenRequestByValue
+    | IdTokenRequestByValue
+    | VpTokenRequestByReference
+    | IdTokenRequestByReference;

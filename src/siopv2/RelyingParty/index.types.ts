@@ -28,7 +28,24 @@ type IDTokenRequestByValueOptions = {
     state?: string;
 };
 
-type VPTokenRequestByValueOptions = {
+export type VPTokenRequestByReferenceOptions = {
+    requestBy: "reference";
+    requestUri: string;
+    responseType: "vp_token";
+    presentationDefinition: PresentationDefinitionV2;
+    nonce?: string;
+    state?: string;
+};
+
+export type IDTokenRequestByReferenceOptions = {
+    requestBy: "value";
+    requestUri: string;
+    responseType: "id_token";
+    nonce?: string;
+    state?: string;
+};
+
+export type VPTokenRequestByValueOptions = {
     requestBy: "value";
     responseType: "vp_token";
     presentationDefinition: PresentationDefinitionV2;
@@ -36,17 +53,19 @@ type VPTokenRequestByValueOptions = {
     state?: string;
 };
 
-export type SiopRequestByReference = {
-    requestBy: "reference";
-    requestUri: string;
-    nonce?: string;
-    state?: string;
+export type SiopRequestResult = {
+    uri: `siopv2://idtoken${string}`;
+    request: string;
+    requestOptions: Partial<
+        VPTokenRequestByValueOptions | IDTokenRequestByValueOptions
+    >;
 };
 
 export type CreateRequestOptions =
     | VPTokenRequestByValueOptions
     | IDTokenRequestByValueOptions
-    | SiopRequestByReference;
+    | VPTokenRequestByReferenceOptions
+    | IDTokenRequestByReferenceOptions;
 
 export enum SigningAlgs {
     ES256K = "ES256K",

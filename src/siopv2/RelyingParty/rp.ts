@@ -1,5 +1,10 @@
 import { objectToSnakeCaseQueryString } from "../../utils/query";
-import { CreateRequestOptions, RPOptions, AuthResponse } from "./index.types";
+import {
+    CreateRequestOptions,
+    RPOptions,
+    AuthResponse,
+    SiopRequestResult,
+} from "./index.types";
 import * as didJWT from "did-jwt";
 import { PEX } from "@sphereon/pex";
 import { PresentationDefinitionV2 } from "@sphereon/pex-models";
@@ -33,7 +38,9 @@ export class RelyingParty {
      * Create a new SIOP Request
      */
 
-    async createRequest(args: CreateRequestOptions) {
+    async createRequest(
+        args: CreateRequestOptions
+    ): Promise<SiopRequestResult> {
         const { requestBy, ...requestOptions } = args;
         const { privKeyHex, did, kid, ...metadata } = this.metadata;
         const requestData = {
@@ -44,17 +51,31 @@ export class RelyingParty {
         };
         const { clientId, ...requestParams } = requestData;
 
+        let requestQuery: {
+            clientId: string;
+            request?: string;
+            requestUri?: string;
+        } = {
+            clientId,
+        };
+
         const request = await didJWT.createJWT(
             { ...requestParams },
             { issuer: this.did, signer: this.signer },
             { kid: this.kid, alg: "EdDSA" }
         );
-        const requestQuery = objectToSnakeCaseQueryString({
-            clientId,
-            request: request,
-        });
 
-        return `siopv2://idtoken${requestQuery}`;
+        requestBy === "value"
+            ? (requestQuery.request = request)
+            : (requestQuery.requestUri = args.requestUri);
+
+        return {
+            uri: `siopv2://idtoken${objectToSnakeCaseQueryString(
+                requestQuery
+            )}`,
+            request: request,
+            requestOptions: requestParams,
+        };
     }
 
     async validateJwt(jwt: string): Promise<Record<string, any>> {

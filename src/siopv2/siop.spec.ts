@@ -23,10 +23,12 @@ describe("SIOPv2", () => {
     });
 
     test("create SIOP request by value", async () => {
-        requestByValue = await rp.createRequest({
-            requestBy: "value",
-            responseType: "id_token",
-        });
+        requestByValue = (
+            await rp.createRequest({
+                requestBy: "value",
+                responseType: "id_token",
+            })
+        ).uri;
 
         expect(requestByValue).toMatch(
             /^siopv2:\/\/idtoken\?client_id=([^&]+)&request=([^&]+)$/

@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { objectToQueryString } from "../../utils/query";
+import { objectToSnakeCaseQueryString } from "../../utils/query";
 import {
     CreateCredentialOfferOptions,
     IIssuerStore,
@@ -88,8 +88,8 @@ export class VcIssuer {
         const pin = args.pinRequired ? generatePin() : null;
 
         await this.store.create({ id, pin });
-        const request = `openid-credential-offer://${objectToQueryString(
-            offer
+        const request = `openid-credential-offer://${objectToSnakeCaseQueryString(
+            { credential_offer: offer }
         )}`;
         return { request, pin };
     }

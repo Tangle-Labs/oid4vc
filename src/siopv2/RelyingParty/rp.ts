@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { objectToQueryString } from "../../utils/query";
+import { objectToSnakeCaseQueryString } from "../../utils/query";
 import { CreateRequestOptions, RPOptions, AuthResponse } from "./index.types";
 import * as didJWT from "did-jwt";
 import { PEX } from "@sphereon/pex";
@@ -51,7 +51,7 @@ export class RelyingParty {
         requestData.clientMetadata.client_name =
             overrideClientName ?? requestData.clientMetadata.client_name;
 
-        const requestQuery = objectToQueryString(requestData);
+        const requestQuery = objectToSnakeCaseQueryString(requestData);
 
         return `siopv2://idtoken${requestQuery}`;
     }

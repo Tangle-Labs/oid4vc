@@ -84,7 +84,7 @@ export class OpenidProvider {
 
     async createVPTokenResponse(
         presentationDefinition: PresentationDefinitionV2,
-        credentials: any[],
+        credentials: string[],
         request: SiopRequest
     ) {
         const pex = new PEX();

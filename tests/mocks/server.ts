@@ -1,25 +1,24 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
-import { RelyingParty } from "../../src/siopv2/siop";
 import { Server } from "http";
 import { rp } from "./openid";
-
-const app = express();
-app.use(express.json());
-let server: Server;
+import { presentationDefinition } from "./presentation-defs";
 
 export const requestsMap = new Map<string, string>();
-
-app.route("/siop/:id").get(
-    asyncHandler(async (req, res) => {
-        res.send(requestsMap.get(req.params.id));
-    })
-);
+let server: Server;
 
 export function startServer(port = 5000) {
+    const app = express();
+    app.use(express.json());
+    app.route("/siop/:id").get(
+        asyncHandler(async (req, res) => {
+            res.send(requestsMap.get(req.params.id));
+        })
+    );
+
     app.route("/api/auth").post(
         asyncHandler(async (req, res) => {
-            await rp.verifyAuthResponse(req.body);
+            await rp.verifyAuthResponse(req.body, presentationDefinition);
             res.status(204).send();
         })
     );

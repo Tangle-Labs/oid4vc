@@ -5,14 +5,16 @@ type IdTokenRequestByReference = { requestUri: string } & IdTokenRequestByValue;
 type VpTokenRequestByReference = { requestUri: string } & VpTokenRequestByValue;
 
 type IdTokenRequestByValue = RPOptions & {
-    nonce: string;
+    nonce?: string;
+    state?: string;
     redirectUri: string;
     responseMode: "post";
     responseType: "id_token";
 };
 
 type VpTokenRequestByValue = RPOptions & {
-    nonce: string;
+    nonce?: string;
+    state?: string;
     redirectUri: string;
     responseMode: "post";
     responseType: "vp_token";

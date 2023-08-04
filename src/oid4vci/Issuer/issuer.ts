@@ -56,7 +56,7 @@ export class VcIssuer {
         args: CreateCredentialOfferOptions,
         extras: Record<string, any> = {}
     ): Promise<{
-        request: string;
+        uri: string;
         pin?: number;
     }> {
         const { credentials, ...options } = args;
@@ -88,10 +88,10 @@ export class VcIssuer {
         const pin = args.pinRequired ? generatePin() : null;
 
         await this.store.create({ id, pin });
-        const request = `openid-credential-offer://${objectToSnakeCaseQueryString(
-            { credential_offer: offer }
-        )}`;
-        return { request, pin };
+        const uri = `openid-credential-offer://${objectToSnakeCaseQueryString({
+            credential_offer: offer,
+        })}`;
+        return { uri, pin };
     }
 
     async createTokenResponse(request: TokenRequest) {

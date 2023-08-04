@@ -1,8 +1,9 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
 import { Server } from "http";
-import { rp } from "./openid";
+import { issuer, rp } from "./openid";
 import { presentationDefinition } from "./presentation-defs";
+import { credentials } from "./keys.mock";
 
 export const requestsMap = new Map<string, string>();
 let server: Server;
@@ -13,6 +14,36 @@ export function startServer(port = 5000) {
     app.route("/siop/:id").get(
         asyncHandler(async (req, res) => {
             res.send(requestsMap.get(req.params.id));
+        })
+    );
+    app.route("/.well-known/openid-credential-offer").get(
+        asyncHandler(async (req, res) => {
+            res.json(issuer.getIssuerMetadata());
+        })
+    );
+
+    app.route("/token").post(
+        asyncHandler(async (req, res) => {
+            const response = await issuer.createTokenResponse(req.body);
+            res.json(response);
+        })
+    );
+
+    app.route("/api/credential").post(
+        asyncHandler(async (req, res) => {
+            const response = await issuer.createSendCredentialsResponse({
+                credentials: credentials,
+            });
+            res.json(response);
+        })
+    );
+
+    app.route("/api/credentials").post(
+        asyncHandler(async (req, res) => {
+            const response = await issuer.createSendCredentialsResponse({
+                credentials: [...credentials, ...credentials],
+            });
+            res.json(response);
         })
     );
 

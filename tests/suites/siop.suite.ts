@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
-import { requestsMap } from "./mocks/server";
-import { op, rp } from "./mocks/openid";
+import { requestsMap } from "../mocks/server";
+import { op, rp } from "../mocks/openid";
 
 export const siopSuite = () => {
     let requestByValue: string;

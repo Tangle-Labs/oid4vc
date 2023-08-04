@@ -1,8 +1,8 @@
 import { nanoid } from "nanoid";
-import { presentationDefinition } from "./mocks/presentation-defs";
-import { requestsMap } from "./mocks/server";
-import { op, rp } from "./mocks/openid";
-import { credentials } from "./mocks/keys.mock";
+import { presentationDefinition } from "../mocks/presentation-defs";
+import { requestsMap } from "../mocks/server";
+import { op, rp } from "../mocks/openid";
+import { credentials } from "../mocks/keys.mock";
 
 export const oid4vpSuite = () => {
     let requestByValue: string;

@@ -25,7 +25,9 @@ export const camelToSnakeCaseRecursive = (input: any): any => {
     );
 };
 
-export const objectToQueryString = (json: Record<string, any>): string => {
+export const objectToSnakeCaseQueryString = (
+    json: Record<string, any>
+): string => {
     return (
         "?" +
         Object.keys(json)

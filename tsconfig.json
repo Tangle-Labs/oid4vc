@@ -10,6 +10,6 @@
         "skipLibCheck": true,
         "esModuleInterop": true
     },
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "tests/siop.spec.ts", "tests/mocks"],
     "exclude": ["node_modules", "src/tests"]
 }

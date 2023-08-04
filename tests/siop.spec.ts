@@ -1,9 +1,7 @@
 import { nanoid } from "nanoid";
-import { resolver } from "../mocks/iota-resolver";
-import { testingKeys } from "../mocks/keys.mock";
-import { parseQueryStringToJson } from "../utils/query";
-import { OpenidProvider, RelyingParty, SigningAlgs, SiopRequest } from "./siop";
-import { requestsMap, startServer } from "../mocks/server";
+
+import { requestsMap, startServer, stopServer } from "./mocks/server";
+import { op, rp } from "./mocks/openid";
 
 describe("SIOPv2", () => {
     let requestByValue: string;
@@ -11,22 +9,7 @@ describe("SIOPv2", () => {
     let requestByReference: string;
     let responseByReference: Record<string, any>;
 
-    const op = new OpenidProvider({
-        ...testingKeys.op,
-        resolver,
-    });
-    const rp = new RelyingParty({
-        ...testingKeys.rp,
-        clientId: "tanglelabs.io",
-        redirectUri: "http://localhost:5000/api/auth",
-        clientMetadata: {
-            idTokenSigningAlgValuesSupported: [SigningAlgs.EdDSA],
-            subjectSyntaxTypesSupported: ["did:iota"],
-        },
-        resolver,
-    });
-
-    startServer(rp);
+    startServer();
     test("create SIOP request by value", async () => {
         requestByValue = (
             await rp.createRequest({
@@ -60,5 +43,6 @@ describe("SIOPv2", () => {
 
     test("create SIOP response by reference", async () => {
         responseByReference = await op.sendAuthResponse(requestByReference);
+        stopServer();
     });
 });

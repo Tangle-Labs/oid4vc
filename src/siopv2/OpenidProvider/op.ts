@@ -139,7 +139,11 @@ export class OpenidProvider {
                 requestOptions
             );
         }
-        response = { ...response, nonce: requestOptions.nonce };
+        response = {
+            ...response,
+            nonce: requestOptions.nonce,
+            state: requestOptions.state,
+        };
         await axios.post(requestOptions.redirectUri, response).catch(() => {
             throw new Error("unable to send response");
         });

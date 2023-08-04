@@ -58,8 +58,10 @@ export class VcIssuer {
     ): Promise<{
         uri: string;
         pin?: number;
+        offer: Record<string, any>;
     }> {
-        const { credentials, ...options } = args;
+        // @ts-ignore
+        const { credentials, requestBy, credentialOfferUri, ...options } = args;
         const pinNeeded = !!args.pinRequired;
 
         const id = nanoid();
@@ -86,12 +88,16 @@ export class VcIssuer {
             },
         };
         const pin = args.pinRequired ? generatePin() : null;
+        const jsonEmbed =
+            requestBy === "value"
+                ? { credentialOffer: offer }
+                : { credentialOfferUri };
 
         await this.store.create({ id, pin });
         const uri = `openid-credential-offer://${objectToSnakeCaseQueryString({
-            credential_offer: offer,
+            ...jsonEmbed,
         })}`;
-        return { uri, pin };
+        return { uri, pin, offer };
     }
 
     async createTokenResponse(request: TokenRequest) {

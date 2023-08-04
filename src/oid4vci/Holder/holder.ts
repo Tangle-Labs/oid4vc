@@ -1,5 +1,8 @@
 import axios from "axios";
-import { parseQueryStringToJson } from "../../utils/query";
+import {
+    camelToSnakeCaseRecursive,
+    parseQueryStringToJson,
+} from "../../utils/query";
 import { CreateTokenRequestOptions } from "./index.types";
 import { KeyPairRequirements } from "../../common/index.types";
 import * as didJWT from "did-jwt";
@@ -24,18 +27,27 @@ export class VcHolder {
         return response;
     }
 
-    parseCredentialOffer(offer: string): Record<string, any> {
-        return parseQueryStringToJson(
+    async parseCredentialOffer(offer: string): Promise<Record<string, any>> {
+        const rawOffer = parseQueryStringToJson(
             offer.split("openid-credential-offer://")[1]
-        ).credentialOffer;
+        );
+        let credentialOffer;
+        if (rawOffer.credentialOfferUri) {
+            const { data } = await axios.get(rawOffer.credentialOfferUri);
+            data.credential_issuer = data.credentialIssuer;
+            credentialOffer = data;
+        } else {
+            credentialOffer = rawOffer.credentialOffer;
+        }
+        return credentialOffer;
     }
 
     async retrieveMetadata(credentialOffer: string) {
-        const { credential_issuer } =
-            this.parseCredentialOffer(credentialOffer);
+        const offerRaw = await this.parseCredentialOffer(credentialOffer);
+        console.log(offerRaw);
         const metadataEndpoint = new URL(
             ".well-known/openid-credential-issuer",
-            credential_issuer
+            offerRaw.credential_issuer
         ).toString();
         const { data } = await axios.get(metadataEndpoint);
         return data;
@@ -74,7 +86,7 @@ export class VcHolder {
     }
 
     async getCredentialFromOffer(credentialOffer: string, pin?: number) {
-        const offer = this.parseCredentialOffer(credentialOffer);
+        const offer = await this.parseCredentialOffer(credentialOffer);
         const { grants, credentialIssuer, credentials } = offer;
         const metadata = await this.retrieveMetadata(credentialOffer);
         const createTokenPayload: { preAuthCode: any; userPin?: number } = {

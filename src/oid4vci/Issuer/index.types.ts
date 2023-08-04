@@ -26,9 +26,11 @@ type CreateCredentialOfferByValue = {
     pinRequired?: boolean;
 };
 
-type CreateCredentialOfferByReference = CreateCredentialOfferByValue & {
+type CreateCredentialOfferByReference = {
     requestBy: "reference";
     credentialOfferUri: string;
+    credentials: string[];
+    pinRequired?: boolean;
 };
 
 export type CreateCredentialOfferOptions =

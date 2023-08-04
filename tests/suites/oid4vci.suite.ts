@@ -1,11 +1,13 @@
 import { holder, issuer } from "../mocks/openid";
+import { offersMap } from "../mocks/server";
 
 export const oid4vciSuite = () => {
-    let singleCredOffer: { uri: string; pin?: number };
-    let batchCredOffer: { uri: string; pin?: number };
-
+    let singleCredOfferByValue: any;
+    let batchCredOfferByValue: any;
+    let singleCredOfferByReference: any;
+    let batchCredOfferByReference: any;
     test("create single credential offer by value", async () => {
-        singleCredOffer = await issuer.createCredentialOffer({
+        singleCredOfferByValue = await issuer.createCredentialOffer({
             requestBy: "value",
             credentials: ["wa_driving_license"],
         });
@@ -13,13 +15,13 @@ export const oid4vciSuite = () => {
 
     test("get single credential from endpoint", async () => {
         const credentials = await holder.getCredentialFromOffer(
-            singleCredOffer.uri
+            singleCredOfferByValue.uri
         );
         expect(credentials).toHaveLength(1);
     });
 
     test("create batch credential offer by value", async () => {
-        batchCredOffer = await issuer.createCredentialOffer({
+        batchCredOfferByValue = await issuer.createCredentialOffer({
             requestBy: "value",
             credentials: ["wa_driving_license", "wa_driving_license"],
         });
@@ -27,8 +29,24 @@ export const oid4vciSuite = () => {
 
     test("get batch credential from endpoint", async () => {
         const credentials = await holder.getCredentialFromOffer(
-            batchCredOffer.uri
+            batchCredOfferByValue.uri
         );
         expect(credentials).toHaveLength(2);
+    });
+
+    test("create single credential offer by reference", async () => {
+        singleCredOfferByReference = await issuer.createCredentialOffer({
+            requestBy: "reference",
+            credentialOfferUri: "http://localhost:5000/api/offers/single",
+            credentials: ["wa_driving_license"],
+        });
+        offersMap.set("single", singleCredOfferByReference.offer);
+    });
+
+    test("get single credential from endpoint", async () => {
+        const credentials = await holder.getCredentialFromOffer(
+            singleCredOfferByReference.uri
+        );
+        expect(credentials).toHaveLength(1);
     });
 };

@@ -6,6 +6,7 @@ import { presentationDefinition } from "./presentation-defs";
 import { credentials } from "./keys.mock";
 
 export const requestsMap = new Map<string, string>();
+export const offersMap = new Map<string, Record<string, any>>();
 let server: Server;
 
 export function startServer(port = 5000) {
@@ -36,6 +37,12 @@ export function startServer(port = 5000) {
                 credentials: credentials,
             });
             res.json(response);
+        })
+    );
+
+    app.route("/api/offers/:id").get(
+        asyncHandler(async (req, res) => {
+            res.json(offersMap.get(req.params.id));
         })
     );
 

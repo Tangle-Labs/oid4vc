@@ -8,8 +8,9 @@
         "moduleResolution": "node",
         "declaration": true,
         "skipLibCheck": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "rootDir": "./src"
     },
-    "include": ["src/**/*", "tests/siop.spec.ts", "tests/mocks"],
+    "include": ["src/**/*", "tests/siop.spec.ts"],
     "exclude": ["node_modules", "src/tests"]
 }

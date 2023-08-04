@@ -27,7 +27,7 @@ export class VcHolder {
     parseCredentialOffer(offer: string): Record<string, any> {
         return parseQueryStringToJson(
             offer.split("openid-credential-offer://")[1]
-        );
+        ).credential_offer;
     }
 
     async retrieveMetadata(credentialOffer: string) {

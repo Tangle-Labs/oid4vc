@@ -1,5 +1,6 @@
 import { PresentationDefinitionV2 } from "@sphereon/pex-models";
 import { KeyPairRequirements } from "../../common/index.types";
+import { Resolvable } from "did-resolver";
 
 export type AuthResponse = {
     id_token?: string;
@@ -11,7 +12,7 @@ export type AuthResponse = {
 export type RPOptions = {
     redirectUri: string;
     clientId: string;
-
+    resolver: Resolvable;
     clientMetadata: {
         subjectSyntaxTypesSupported: string[];
         idTokenSigningAlgValuesSupported: SigningAlgs[];
@@ -23,26 +24,23 @@ export type RPOptions = {
 type IDTokenRequestByValueOptions = {
     requestBy: "value";
     responseType: "id_token";
-    nonce: string;
-    overrideLogo?: string;
-    overrideClientName?: string;
+    nonce?: string;
+    state?: string;
 };
 
 type VPTokenRequestByValueOptions = {
     requestBy: "value";
     responseType: "vp_token";
     presentationDefinition: PresentationDefinitionV2;
-    nonce: string;
-    overrideLogo?: string;
-    overrideClientName?: string;
+    nonce?: string;
+    state?: string;
 };
 
 export type SiopRequestByReference = {
     requestBy: "reference";
     requestUri: string;
-    nonce: string;
-    overrideLogo: string;
-    overrideClientName?: string;
+    nonce?: string;
+    state?: string;
 };
 
 export type CreateRequestOptions =

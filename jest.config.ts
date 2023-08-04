@@ -1,16 +1,21 @@
-/**
- * For a detailed explanation regarding each configuration property, visit:
- * https://jestjs.io/docs/configuration
- */
+import type { JestConfigWithTsJest } from "ts-jest";
 
-import type { Config } from "jest";
-
-const config: Config = {
-    collectCoverage: true,
-
-    coverageDirectory: "coverage",
-
-    coverageProvider: "v8",
+const config: JestConfigWithTsJest = {
+    preset: "ts-jest/presets/default-esm",
+    resolver: "ts-jest-resolver",
+    moduleNameMapper: {
+        "^(\\.{1,2}/.*)\\.js$": "$1",
+    },
+    transform: {
+        // '^.+\\.[tj]sx?$' to process js/ts with `ts-jest`
+        // '^.+\\.m?[tj]sx?$' to process js/ts/mjs/mts with `ts-jest`
+        "^.+\\.tsx?$": [
+            "ts-jest",
+            {
+                useESM: true,
+            },
+        ],
+    },
 };
 
 export default config;

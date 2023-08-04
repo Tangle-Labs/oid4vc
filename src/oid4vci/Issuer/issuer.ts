@@ -10,7 +10,7 @@ import { generatePin } from "../../utils/pin";
 import { TokenRequest } from "../Holder/index.types";
 import * as didJWT from "did-jwt";
 import { buildSigner } from "../../utils/signer";
-import { RESOLVER } from "../../config";
+import { Resolvable } from "did-resolver";
 
 export class VcIssuer {
     metadata: Omit<VcIssuerOptions, "store" | "did" | "kid" | "privKeyHex">;
@@ -18,7 +18,7 @@ export class VcIssuer {
     signer: didJWT.Signer;
     did: string;
     kid: string;
-    private privKeyHex: string;
+    resolver: Resolvable;
 
     constructor(options: VcIssuerOptions) {
         const { store, did, privKeyHex, kid, ...others } = options;
@@ -27,7 +27,7 @@ export class VcIssuer {
         this.signer = buildSigner(options.privKeyHex);
         this.did = did;
         this.kid = kid;
-        this.privKeyHex = privKeyHex;
+        this.resolver = options.resolver;
     }
 
     getIssuerMetadata() {
@@ -99,7 +99,7 @@ export class VcIssuer {
             throw new Error("invalid_request");
         const { signer, payload } = await didJWT
             .verifyJWT(request["pre-authorized_code"], {
-                resolver: RESOLVER,
+                resolver: this.resolver,
                 policies: { aud: false },
             })
             .catch((e) => {
@@ -144,7 +144,7 @@ export class VcIssuer {
         if (!token || !proof) throw new Error("invalid_request");
         const { payload, signer } = await didJWT.verifyJWT(token, {
             policies: { aud: false },
-            resolver: RESOLVER,
+            resolver: this.resolver,
         });
         if (
             signer.controller !== this.did ||
@@ -153,7 +153,7 @@ export class VcIssuer {
             throw new Error("invalid_token");
         const { signer: didSigner } = await didJWT.verifyJWT(proof, {
             policies: { aud: false },
-            resolver: RESOLVER,
+            resolver: this.resolver,
         });
 
         return didSigner.controller;

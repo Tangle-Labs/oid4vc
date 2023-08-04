@@ -6,13 +6,14 @@ import * as didJWT from "did-jwt";
 import { PresentationDefinitionV2 } from "@sphereon/pex-models";
 import axios from "axios";
 import { buildSigner } from "../../utils/signer";
-import { RESOLVER } from "../../config";
+import { Resolvable } from "did-resolver";
 
 export class OpenidProvider {
-    did: string;
-    kid: string;
-    privKeyHex: string;
-    signer: didJWT.Signer;
+    private did: string;
+    private kid: string;
+    private privKeyHex: string;
+    private signer: didJWT.Signer;
+    private resolver: Resolvable;
 
     constructor(args: OPOptions) {
         this.did = args.did;
@@ -117,7 +118,9 @@ export class OpenidProvider {
             request.split("siopv2://idtoken")[1]
         );
         const requestOptions = (
-            await didJWT.verifyJWT(requestRaw.request, { resolver: RESOLVER })
+            await didJWT.verifyJWT(requestRaw.request, {
+                resolver: this.resolver,
+            })
         ).payload as SiopRequest;
         let response: Record<string, any>;
         if (requestOptions.responseType === "id_token") {

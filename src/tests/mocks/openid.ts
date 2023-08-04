@@ -7,7 +7,7 @@ import {
     SimpleStore,
     VcHolder,
     VcIssuer,
-} from "../../src";
+} from "../..";
 import { resolver } from "./iota-resolver";
 import { testingKeys } from "./keys.mock";
 import path from "path";

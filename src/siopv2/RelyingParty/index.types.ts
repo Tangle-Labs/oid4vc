@@ -38,7 +38,7 @@ export type VPTokenRequestByReferenceOptions = {
 };
 
 export type IDTokenRequestByReferenceOptions = {
-    requestBy: "value";
+    requestBy: "reference";
     requestUri: string;
     responseType: "id_token";
     nonce?: string;

@@ -1,12 +1,12 @@
 import { PEX } from "@sphereon/pex";
 import { parseQueryStringToJson } from "../../utils/query";
-import { SiopRequest } from "../index.types";
 import { OPOptions } from "./index.types";
 import * as didJWT from "did-jwt";
 import { PresentationDefinitionV2 } from "@sphereon/pex-models";
 import axios from "axios";
 import { buildSigner } from "../../utils/signer";
 import { Resolvable } from "did-resolver";
+import { SiopRequest } from "../index.types";
 
 export class OpenidProvider {
     private did: string;
@@ -20,6 +20,7 @@ export class OpenidProvider {
         this.kid = args.kid;
         this.privKeyHex = args.privKeyHex;
         this.signer = buildSigner(this.privKeyHex);
+        this.resolver = args.resolver;
     }
 
     async createIDTokenResponse(request: SiopRequest) {
@@ -114,11 +115,16 @@ export class OpenidProvider {
     }
 
     async sendAuthResponse(request: string, credentials?: any[]) {
-        const { request: requestRaw } = parseQueryStringToJson(
+        const requestRaw = parseQueryStringToJson(
             request.split("siopv2://idtoken")[1]
         );
+        let requestJwt: string;
+        requestRaw.requestUri
+            ? (requestJwt = (await axios.get(requestRaw.requestUri)).data)
+            : (requestJwt = requestRaw.request);
+
         const requestOptions = (
-            await didJWT.verifyJWT(requestRaw.request, {
+            await didJWT.verifyJWT(requestJwt, {
                 resolver: this.resolver,
             })
         ).payload as SiopRequest;

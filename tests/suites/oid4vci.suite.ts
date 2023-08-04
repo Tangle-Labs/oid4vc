@@ -6,6 +6,7 @@ export const oid4vciSuite = () => {
 
     test("create single credential offer by value", async () => {
         singleCredOffer = await issuer.createCredentialOffer({
+            requestBy: "value",
             credentials: ["wa_driving_license"],
         });
     });
@@ -19,6 +20,7 @@ export const oid4vciSuite = () => {
 
     test("create batch credential offer by value", async () => {
         batchCredOffer = await issuer.createCredentialOffer({
+            requestBy: "value",
             credentials: ["wa_driving_license", "wa_driving_license"],
         });
     });

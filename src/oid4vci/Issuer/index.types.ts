@@ -20,10 +20,20 @@ export type VcIssuerOptions = {
 
 export type IssuerStoreData = { id: string; pin: number };
 
-export type CreateCredentialOfferOptions = {
+type CreateCredentialOfferByValue = {
+    requestBy: "value";
     credentials: string[];
     pinRequired?: boolean;
 };
+
+type CreateCredentialOfferByReference = CreateCredentialOfferByValue & {
+    requestBy: "reference";
+    credentialOfferUri: string;
+};
+
+export type CreateCredentialOfferOptions =
+    | CreateCredentialOfferByReference
+    | CreateCredentialOfferByValue;
 
 export interface IIssuerStore<T> {
     create: (payload: T) => Promise<T> | T;

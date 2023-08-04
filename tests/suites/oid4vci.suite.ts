@@ -49,4 +49,20 @@ export const oid4vciSuite = () => {
         );
         expect(credentials).toHaveLength(1);
     });
+
+    test("create batch credential offer by reference", async () => {
+        batchCredOfferByReference = await issuer.createCredentialOffer({
+            requestBy: "reference",
+            credentialOfferUri: "http://localhost:5000/api/offers/batch",
+            credentials: ["wa_driving_license", "wa_driving_license"],
+        });
+        offersMap.set("batch", batchCredOfferByReference.offer);
+    });
+
+    test("get batch credential from endpoint by reference", async () => {
+        const credentials = await holder.getCredentialFromOffer(
+            batchCredOfferByReference.uri
+        );
+        expect(credentials).toHaveLength(2);
+    });
 };

@@ -44,7 +44,6 @@ export class VcHolder {
 
     async retrieveMetadata(credentialOffer: string) {
         const offerRaw = await this.parseCredentialOffer(credentialOffer);
-        console.log(offerRaw);
         const metadataEndpoint = new URL(
             ".well-known/openid-credential-issuer",
             offerRaw.credential_issuer

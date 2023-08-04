@@ -89,7 +89,7 @@ export class VcIssuer {
 
         await this.store.create({ id, pin });
         const request = `openid-credential-offer://${objectToSnakeCaseQueryString(
-            offer
+            { credential_offer: offer }
         )}`;
         return { request, pin };
     }

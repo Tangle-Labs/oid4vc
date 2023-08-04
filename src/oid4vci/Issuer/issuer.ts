@@ -90,8 +90,8 @@ export class VcIssuer {
         const pin = args.pinRequired ? generatePin() : null;
         const jsonEmbed =
             requestBy === "value"
-                ? { credentialOffer: offer }
-                : { credentialOfferUri };
+                ? { credential_offer: offer }
+                : { credential_offer_uri: credentialOfferUri };
 
         await this.store.create({ id, pin });
         const uri = `openid-credential-offer://${objectToSnakeCaseQueryString({

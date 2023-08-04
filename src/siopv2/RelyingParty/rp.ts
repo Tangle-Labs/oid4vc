@@ -50,8 +50,17 @@ export class RelyingParty {
             overrideLogo ?? requestData.clientMetadata.logo_uri;
         requestData.clientMetadata.client_name =
             overrideClientName ?? requestData.clientMetadata.client_name;
+        const { clientId, ...requestParams } = requestData;
 
-        const requestQuery = objectToSnakeCaseQueryString(requestData);
+        const request = didJWT.createJWT(
+            { ...requestParams },
+            { issuer: this.did, signer: this.signer },
+            { kid: this.kid, alg: "EdDSA" }
+        );
+        const requestQuery = objectToSnakeCaseQueryString({
+            clientId,
+            request: request,
+        });
 
         return `siopv2://idtoken${requestQuery}`;
     }

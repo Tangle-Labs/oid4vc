@@ -6,6 +6,7 @@ import * as didJWT from "did-jwt";
 import { PresentationDefinitionV2 } from "@sphereon/pex-models";
 import axios from "axios";
 import { buildSigner } from "../../utils/signer";
+import { RESOLVER } from "../../config";
 
 export class OpenidProvider {
     did: string;
@@ -112,9 +113,12 @@ export class OpenidProvider {
     }
 
     async sendAuthResponse(request: string, credentials?: any[]) {
-        const requestOptions = parseQueryStringToJson(
+        const { request: requestRaw } = parseQueryStringToJson(
             request.split("siopv2://idtoken")[1]
-        ) as SiopRequest;
+        );
+        const requestOptions = (
+            await didJWT.verifyJWT(requestRaw.request, { resolver: RESOLVER })
+        ).payload as SiopRequest;
         let response: Record<string, any>;
         if (requestOptions.responseType === "id_token") {
             response = await this.createIDTokenResponse(requestOptions);

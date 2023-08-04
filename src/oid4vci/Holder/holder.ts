@@ -27,14 +27,15 @@ export class VcHolder {
     parseCredentialOffer(offer: string): Record<string, any> {
         return parseQueryStringToJson(
             offer.split("openid-credential-offer://")[1]
-        ).credential_offer;
+        ).credentialOffer;
     }
 
     async retrieveMetadata(credentialOffer: string) {
-        const { credentialIssuer } = this.parseCredentialOffer(credentialOffer);
+        const { credential_issuer } =
+            this.parseCredentialOffer(credentialOffer);
         const metadataEndpoint = new URL(
             ".well-known/openid-credential-issuer",
-            credentialIssuer
+            credential_issuer
         ).toString();
         const { data } = await axios.get(metadataEndpoint);
         return data;
@@ -73,8 +74,8 @@ export class VcHolder {
     }
 
     async getCredentialFromOffer(credentialOffer: string, pin?: number) {
-        const { grants, credentials, credentialIssuer } =
-            this.parseCredentialOffer(credentialOffer);
+        const offer = this.parseCredentialOffer(credentialOffer);
+        const { grants, credentialIssuer, credentials } = offer;
         const metadata = await this.retrieveMetadata(credentialOffer);
         const createTokenPayload: { preAuthCode: any; userPin?: number } = {
             preAuthCode:

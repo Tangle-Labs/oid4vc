@@ -50,7 +50,7 @@ export const issuer = new VcIssuer({
     ...testingKeys.rp,
     batchCredentialEndpoint: "http://localhost:5000/api/credentials",
     credentialEndpoint: "http://localhost:5000/api/credential",
-    credentialIssuer: testingKeys.rp.did,
+    credentialIssuer: "http://localhost:5000/",
     proofTypesSupported: ["jwt"],
     cryptographicBindingMethodsSupported: ["did:iota"],
     cryptographicSuitesSupported: ["EdDSA"],

@@ -16,9 +16,10 @@ export function startServer(port = 5000) {
             res.send(requestsMap.get(req.params.id));
         })
     );
-    app.route("/.well-known/openid-credential-offer").get(
+    app.route("/.well-known/openid-credential-issuer").get(
         asyncHandler(async (req, res) => {
-            res.json(issuer.getIssuerMetadata());
+            const metadata = issuer.getIssuerMetadata();
+            res.json(metadata);
         })
     );
 

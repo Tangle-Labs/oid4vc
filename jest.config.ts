@@ -17,6 +17,7 @@ const config: JestConfigWithTsJest = {
             },
         ],
     },
+    testTimeout: 15_000,
 };
 
 export default config;

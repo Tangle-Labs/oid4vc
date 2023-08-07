@@ -10,6 +10,7 @@ import { PEX } from "@sphereon/pex";
 import { PresentationDefinitionV2 } from "@sphereon/pex-models";
 import { buildSigner } from "../../utils/signer";
 import { Resolvable } from "did-resolver";
+import { camelToSnakeRecursive } from "../../utils/object";
 
 export class RelyingParty {
     private metadata: RPOptions;
@@ -53,8 +54,9 @@ export class RelyingParty {
             scope: "openid",
             responseMode: "post",
         };
-        const { clientId, ...requestParams } = requestData;
+        const { clientId, ...rest } = requestData;
 
+        const requestParams = camelToSnakeRecursive(rest);
         let requestQuery: {
             clientId: string;
             request?: string;

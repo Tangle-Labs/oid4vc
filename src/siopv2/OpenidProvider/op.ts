@@ -66,9 +66,19 @@ export class OpenidProvider {
 
     async getCredentialsFromRequest(request: string, credentials: any[]) {
         const pex = new PEX();
-        const requestOptions = parseQueryStringToJson(
+        const requestRaw = parseQueryStringToJson(
             request.split("siopv2://idtoken")[1]
-        ) as SiopRequest;
+        );
+        let requestJwt: string;
+        requestRaw.requestUri
+            ? (requestJwt = (await axios.get(requestRaw.requestUri)).data)
+            : (requestJwt = requestRaw.request);
+
+        const requestOptions = (
+            await didJWT.verifyJWT(requestJwt, {
+                resolver: this.resolver,
+            })
+        ).payload as SiopRequest;
 
         if (requestOptions.responseType !== "vp_token")
             throw new Error("invalid response type");

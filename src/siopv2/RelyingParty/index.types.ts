@@ -8,17 +8,18 @@ export type AuthResponse = {
     issuer_state?: string;
     presentation_submission?: PresentationDefinitionV2;
 };
+export type RPMetadata = {
+    subjectSyntaxTypesSupported: string[];
+    idTokenSigningAlgValuesSupported: SigningAlgs[];
+    logoUri?: string;
+    clientName?: string;
+};
 
 export type RPOptions = {
     redirectUri: string;
     clientId: string;
     resolver: Resolvable;
-    clientMetadata: {
-        subjectSyntaxTypesSupported: string[];
-        idTokenSigningAlgValuesSupported: SigningAlgs[];
-        logo_uri?: string;
-        client_name?: string;
-    };
+    clientMetadata: RPMetadata;
 } & KeyPairRequirements;
 
 type IDTokenRequestByValueOptions = {
@@ -26,6 +27,7 @@ type IDTokenRequestByValueOptions = {
     responseType: "id_token";
     nonce?: string;
     state?: string;
+    clientMetadata?: Partial<RPMetadata>;
 };
 
 export type VPTokenRequestByReferenceOptions = {
@@ -35,6 +37,7 @@ export type VPTokenRequestByReferenceOptions = {
     presentationDefinition: PresentationDefinitionV2;
     nonce?: string;
     state?: string;
+    clientMetadata?: Partial<RPMetadata>;
 };
 
 export type IDTokenRequestByReferenceOptions = {
@@ -43,6 +46,7 @@ export type IDTokenRequestByReferenceOptions = {
     responseType: "id_token";
     nonce?: string;
     state?: string;
+    clientMetadata?: Partial<RPMetadata>;
 };
 
 export type VPTokenRequestByValueOptions = {
@@ -51,6 +55,7 @@ export type VPTokenRequestByValueOptions = {
     presentationDefinition: PresentationDefinitionV2;
     nonce?: string;
     state?: string;
+    clientMetadata?: Partial<RPMetadata>;
 };
 
 export type SiopRequestResult = {

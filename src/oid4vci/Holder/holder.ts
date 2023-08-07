@@ -8,7 +8,6 @@ import { KeyPairRequirements } from "../../common/index.types";
 import * as didJWT from "did-jwt";
 import { buildSigner, snakeToCamelRecursive } from "../../utils/utils";
 import { joinUrls } from "../../utils/url";
-import { raw } from "express";
 
 export class VcHolder {
     private holderKeys: KeyPairRequirements;

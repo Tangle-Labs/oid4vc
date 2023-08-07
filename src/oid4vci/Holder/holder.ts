@@ -7,6 +7,7 @@ import { CreateTokenRequestOptions } from "./index.types";
 import { KeyPairRequirements } from "../../common/index.types";
 import * as didJWT from "did-jwt";
 import { buildSigner } from "../../utils/utils";
+import { joinURLs } from "../../utils/url";
 
 export class VcHolder {
     private holderKeys: KeyPairRequirements;
@@ -44,10 +45,11 @@ export class VcHolder {
 
     async retrieveMetadata(credentialOffer: string) {
         const offerRaw = await this.parseCredentialOffer(credentialOffer);
-        const metadataEndpoint = new URL(
-            ".well-known/openid-credential-issuer",
-            offerRaw.credential_issuer
-        ).toString();
+        const metadataEndpoint = joinURLs(
+            offerRaw.credentialIssuer,
+            ".well-known/openid-credential-issuer"
+        );
+        console.log(metadataEndpoint);
         const { data } = await axios.get(metadataEndpoint);
         return data;
     }

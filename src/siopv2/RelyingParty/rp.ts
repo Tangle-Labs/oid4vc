@@ -46,6 +46,10 @@ export class RelyingParty {
         const requestData = {
             ...requestOptions,
             ...metadata,
+            clientMetadata: {
+                ...metadata.clientMetadata,
+                ...args.clientMetadata,
+            },
             scope: "openid",
             responseMode: "post",
         };

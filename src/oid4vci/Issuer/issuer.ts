@@ -1,5 +1,8 @@
 import { nanoid } from "nanoid";
-import { objectToSnakeCaseQueryString } from "../../utils/query";
+import {
+    camelToSnakeCaseRecursive,
+    objectToSnakeCaseQueryString,
+} from "../../utils/query";
 import {
     CreateCredentialOfferOptions,
     IIssuerStore,
@@ -46,8 +49,8 @@ export class VcIssuer {
                 },
             ],
             display: {
-                logo_uri: this.metadata.logo_uri,
-                client_name: this.metadata.client_name,
+                logo_uri: this.metadata.logoUri,
+                client_name: this.metadata.clientName,
             },
         };
     }
@@ -76,7 +79,7 @@ export class VcIssuer {
             { alg: "EdDSA", kid: this.kid }
         );
 
-        const offer = {
+        const offer = camelToSnakeCaseRecursive({
             credentialIssuer: this.metadata.credentialIssuer,
             ...options,
             credentials: [...credentials],
@@ -86,7 +89,7 @@ export class VcIssuer {
                     user_pin_required: pinNeeded,
                 },
             },
-        };
+        });
         const pin = args.pinRequired ? generatePin() : null;
         const jsonEmbed =
             requestBy === "value"

@@ -6,7 +6,7 @@ import {
 import { CreateTokenRequestOptions } from "./index.types";
 import { KeyPairRequirements } from "../../common/index.types";
 import * as didJWT from "did-jwt";
-import { buildSigner } from "../../utils/utils";
+import { buildSigner, snakeToCamelRecursive } from "../../utils/utils";
 import { joinUrls } from "../../utils/url";
 
 export class VcHolder {
@@ -35,18 +35,21 @@ export class VcHolder {
         let credentialOffer;
         if (rawOffer.credentialOfferUri) {
             const { data } = await axios.get(rawOffer.credentialOfferUri);
-            data.credential_issuer = data.credentialIssuer;
-            credentialOffer = data;
+            console.log(data);
+            credentialOffer = snakeToCamelRecursive(data);
         } else {
-            credentialOffer = rawOffer.credentialOffer;
+            console.log(rawOffer.credentialOffer);
+            credentialOffer = snakeToCamelRecursive(rawOffer.credentialOffer);
         }
+
+        console.log(credentialOffer);
         return credentialOffer;
     }
 
     async retrieveMetadata(credentialOffer: string) {
         const offerRaw = await this.parseCredentialOffer(credentialOffer);
         const metadataEndpoint = joinUrls(
-            offerRaw.credential_issuer,
+            offerRaw.credentialIssuer,
             ".well-known/openid-credential-issuer"
         );
         const { data } = await axios.get(metadataEndpoint);

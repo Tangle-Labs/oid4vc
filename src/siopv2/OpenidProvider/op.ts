@@ -7,6 +7,7 @@ import axios from "axios";
 import { buildSigner } from "../../utils/signer";
 import { Resolvable } from "did-resolver";
 import { SiopRequest } from "../index.types";
+import { snakeToCamelRecursive } from "../../utils/object";
 
 export class OpenidProvider {
     private did: string;
@@ -41,6 +42,23 @@ export class OpenidProvider {
         return { id_token: jwt };
     }
 
+    async getRequestFromOffer(request: string): Promise<SiopRequest> {
+        const requestRaw = parseQueryStringToJson(
+            request.split("siopv2://idtoken")[1]
+        );
+        let requestJwt: string;
+        requestRaw.requestUri
+            ? (requestJwt = (await axios.get(requestRaw.requestUri)).data)
+            : (requestJwt = requestRaw.request);
+
+        const requestOptions = snakeToCamelRecursive(
+            await didJWT.verifyJWT(requestJwt, {
+                resolver: this.resolver,
+            })
+        ).payload as SiopRequest;
+        return requestOptions;
+    }
+
     private async encodeJwtVp(
         vp: Record<string, any>,
         request: SiopRequest
@@ -66,20 +84,8 @@ export class OpenidProvider {
 
     async getCredentialsFromRequest(request: string, credentials: any[]) {
         const pex = new PEX();
-        const requestRaw = parseQueryStringToJson(
-            request.split("siopv2://idtoken")[1]
-        );
-        let requestJwt: string;
-        requestRaw.requestUri
-            ? (requestJwt = (await axios.get(requestRaw.requestUri)).data)
-            : (requestJwt = requestRaw.request);
 
-        const requestOptions = (
-            await didJWT.verifyJWT(requestJwt, {
-                resolver: this.resolver,
-            })
-        ).payload as SiopRequest;
-
+        const requestOptions = await this.getRequestFromOffer(request);
         if (requestOptions.responseType !== "vp_token")
             throw new Error("invalid response type");
         const selected = pex.selectFrom(
@@ -125,19 +131,7 @@ export class OpenidProvider {
     }
 
     async sendAuthResponse(request: string, credentials?: any[]) {
-        const requestRaw = parseQueryStringToJson(
-            request.split("siopv2://idtoken")[1]
-        );
-        let requestJwt: string;
-        requestRaw.requestUri
-            ? (requestJwt = (await axios.get(requestRaw.requestUri)).data)
-            : (requestJwt = requestRaw.request);
-
-        const requestOptions = (
-            await didJWT.verifyJWT(requestJwt, {
-                resolver: this.resolver,
-            })
-        ).payload as SiopRequest;
+        const requestOptions = await this.getRequestFromOffer(request);
         let response: Record<string, any>;
         if (requestOptions.responseType === "id_token") {
             response = await this.createIDTokenResponse(requestOptions);

@@ -138,7 +138,6 @@ export class OpenidProvider {
                 resolver: this.resolver,
             })
         ).payload as SiopRequest;
-        console.log(requestOptions);
         let response: Record<string, any>;
         if (requestOptions.responseType === "id_token") {
             response = await this.createIDTokenResponse(requestOptions);
@@ -150,7 +149,11 @@ export class OpenidProvider {
                 requestOptions
             );
         }
-        response = { ...response, nonce: requestOptions.nonce };
+        response = {
+            ...response,
+            nonce: requestOptions.nonce,
+            state: requestOptions.state,
+        };
         await axios.post(requestOptions.redirectUri, response).catch(() => {
             throw new Error("unable to send response");
         });

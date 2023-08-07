@@ -42,7 +42,7 @@ export class OpenidProvider {
         return { id_token: jwt };
     }
 
-    private async getRequestFromOffer(request: string): Promise<SiopRequest> {
+    async getRequestFromOffer(request: string): Promise<SiopRequest> {
         const requestRaw = parseQueryStringToJson(
             request.split("siopv2://idtoken")[1]
         );

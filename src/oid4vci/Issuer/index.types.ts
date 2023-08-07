@@ -13,8 +13,8 @@ export type VcIssuerOptions = {
     cryptographicSuitesSupported: CryptographicSuites[];
     proofTypesSupported: ProofTypes[];
     store: IIssuerStore<IssuerStoreData>;
-    logo_uri?: string;
-    client_name?: string;
+    logoUri?: string;
+    clientName?: string;
     resolver: Resolvable;
 } & KeyPairRequirements;
 

@@ -49,8 +49,8 @@ export class VcIssuer {
                 },
             ],
             display: {
-                logo_uri: this.metadata.logo_uri,
-                client_name: this.metadata.client_name,
+                logo_uri: this.metadata.logoUri,
+                client_name: this.metadata.clientName,
             },
         };
     }

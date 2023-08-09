@@ -7,6 +7,7 @@ type ProofTypes = "jwt";
 
 export type VcIssuerOptions = {
     credentialEndpoint: string;
+    tokenEndpoint: string;
     batchCredentialEndpoint: string;
     credentialIssuer: string;
     cryptographicBindingMethodsSupported: CryptographicMethods[];

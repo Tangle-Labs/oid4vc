@@ -36,6 +36,7 @@ export class VcIssuer {
     getIssuerMetadata() {
         return {
             credential_issuer: this.metadata.credentialIssuer,
+            token_endpoint: this.metadata.tokenEndpoint,
             credential_endpoint: this.metadata.credentialEndpoint,
             batch_credential_endpoint: this.metadata.batchCredentialEndpoint,
             credentials_supported: [

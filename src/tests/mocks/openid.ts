@@ -55,6 +55,7 @@ export const issuer = new VcIssuer({
     cryptographicBindingMethodsSupported: ["did:iota"],
     cryptographicSuitesSupported: ["EdDSA"],
     resolver,
+    tokenEndpoint: "http://localhost:5000/token",
     store: new SimpleStore({ reader, writer }),
 });
 

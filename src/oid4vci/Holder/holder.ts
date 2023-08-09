@@ -1,8 +1,5 @@
 import axios from "axios";
-import {
-    camelToSnakeCaseRecursive,
-    parseQueryStringToJson,
-} from "../../utils/query";
+import { parseQueryStringToJson } from "../../utils/query";
 import { CreateTokenRequestOptions } from "./index.types";
 import { KeyPairRequirements } from "../../common/index.types";
 import * as didJWT from "did-jwt";
@@ -53,7 +50,7 @@ export class VcHolder {
             ".well-known/openid-credential-issuer"
         );
         const { data } = await axios.get(metadataEndpoint);
-        return data;
+        return snakeToCamelRecursive(data);
     }
 
     async retrieveCredential(
@@ -109,10 +106,7 @@ export class VcHolder {
         const tokenRequest = await this.createTokenRequest(createTokenPayload);
 
         const tokenResponse = await axios.post(
-            new URL(
-                "/token",
-                metadata.authorization_server ?? metadata.credential_issuer
-            ).toString(),
+            metadata.tokenEndpoint,
             tokenRequest
         );
 
@@ -127,8 +121,8 @@ export class VcHolder {
 
         const endpoint =
             Object.keys(credentials).length > 1
-                ? metadata.batch_credential_endpoint
-                : metadata.credential_endpoint;
+                ? metadata.batchCredentialEndpoint
+                : metadata.credentialEndpoint;
 
         return this.retrieveCredential(
             endpoint,

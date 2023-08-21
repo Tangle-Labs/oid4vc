@@ -24,6 +24,13 @@ export function startServer(port = 5000) {
         })
     );
 
+    app.route("/.well-known/oauth-authorization-server").get(
+        asyncHandler(async (req, res) => {
+            const metadata = issuer.getOauthServerMetadata();
+            res.json(metadata);
+        })
+    );
+
     app.route("/token").post(
         asyncHandler(async (req, res) => {
             const response = await issuer.createTokenResponse(req.body);

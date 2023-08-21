@@ -5,6 +5,11 @@ type CryptographicSuites = "EdDSA";
 type CryptographicMethods = "did:iota" | "did:key";
 type ProofTypes = "jwt";
 
+export type SupportedCredentials = {
+    name: string;
+    type: string;
+};
+
 export type VcIssuerOptions = {
     credentialEndpoint: string;
     tokenEndpoint: string;
@@ -17,6 +22,7 @@ export type VcIssuerOptions = {
     logoUri?: string;
     clientName?: string;
     resolver: Resolvable;
+    supportedCredentials?: SupportedCredentials[];
 } & KeyPairRequirements;
 
 export type IssuerStoreData = { id: string; pin: number };

@@ -49,8 +49,16 @@ export class VcHolder {
             offerRaw.credentialIssuer,
             ".well-known/openid-credential-issuer"
         );
+        const oauthMetadataUrl = joinUrls(
+            offerRaw.credentialIssuer,
+            ".well-known/oauth-authorization-server"
+        );
         const { data } = await axios.get(metadataEndpoint);
-        return snakeToCamelRecursive(data);
+        const { data: oauthServerMetadata } = await axios.get(oauthMetadataUrl);
+        return {
+            ...snakeToCamelRecursive(data),
+            ...snakeToCamelRecursive(oauthServerMetadata),
+        };
     }
 
     async retrieveCredential(

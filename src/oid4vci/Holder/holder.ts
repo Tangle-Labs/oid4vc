@@ -32,14 +32,11 @@ export class VcHolder {
         let credentialOffer;
         if (rawOffer.credentialOfferUri) {
             const { data } = await axios.get(rawOffer.credentialOfferUri);
-            console.log(data);
             credentialOffer = snakeToCamelRecursive(data);
         } else {
-            console.log(rawOffer.credentialOffer);
             credentialOffer = snakeToCamelRecursive(rawOffer.credentialOffer);
         }
 
-        console.log(credentialOffer);
         return credentialOffer;
     }
 
@@ -97,7 +94,6 @@ export class VcHolder {
         const offer = await this.parseCredentialOffer(credentialOffer);
         const { grants, credentialIssuer, credentials } = offer;
         const metadata = await this.retrieveMetadata(credentialOffer);
-        console.log("metadata", metadata);
         const createTokenPayload: { preAuthCode: any; userPin?: number } = {
             preAuthCode:
                 grants["urn:ietf:params:oauth:grant-type:pre-authorized_code"][

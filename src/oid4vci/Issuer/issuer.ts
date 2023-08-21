@@ -50,7 +50,6 @@ export class VcIssuer {
         }));
         return {
             credential_issuer: this.metadata.credentialIssuer,
-            token_endpoint: this.metadata.tokenEndpoint,
             credential_endpoint: this.metadata.credentialEndpoint,
             batch_credential_endpoint: this.metadata.batchCredentialEndpoint,
             credentials_supported,
@@ -58,6 +57,13 @@ export class VcIssuer {
                 logo_uri: this.metadata.logoUri,
                 client_name: this.metadata.clientName,
             },
+        };
+    }
+
+    getOauthServerMetadata() {
+        return {
+            issuer: this.metadata.credentialIssuer,
+            token_endpoint: this.metadata.tokenEndpoint,
         };
     }
 

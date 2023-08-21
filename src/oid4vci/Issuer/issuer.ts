@@ -34,21 +34,26 @@ export class VcIssuer {
     }
 
     getIssuerMetadata() {
+        const supportedCredentialsArray =
+            this.metadata.supportedCredentials ?? [];
+        const credentials_supported = supportedCredentialsArray.map((cred) => ({
+            format: "jwt_vc_json",
+            cryptographic_binding_methods_supported:
+                this.metadata.cryptographicBindingMethodsSupported,
+            cryprographic_suites_supported:
+                this.metadata.cryptographicSuitesSupported,
+            proof_types_supported: this.metadata.proofTypesSupported,
+            credential_definition: {
+                type: ["VerifiableCredential", cred.type],
+            },
+            scope: cred.name,
+        }));
         return {
             credential_issuer: this.metadata.credentialIssuer,
             token_endpoint: this.metadata.tokenEndpoint,
             credential_endpoint: this.metadata.credentialEndpoint,
             batch_credential_endpoint: this.metadata.batchCredentialEndpoint,
-            credentials_supported: [
-                {
-                    format: "jwt_vc_json",
-                    cryptographic_binding_methods_supported:
-                        this.metadata.cryptographicBindingMethodsSupported,
-                    cryprographic_suites_supported:
-                        this.metadata.cryptographicSuitesSupported,
-                    proof_types_supported: this.metadata.proofTypesSupported,
-                },
-            ],
+            credentials_supported,
             display: {
                 logo_uri: this.metadata.logoUri,
                 client_name: this.metadata.clientName,

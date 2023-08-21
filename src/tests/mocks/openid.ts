@@ -57,6 +57,12 @@ export const issuer = new VcIssuer({
     resolver,
     tokenEndpoint: "http://localhost:5000/token",
     store: new SimpleStore({ reader, writer }),
+    supportedCredentials: [
+        {
+            name: "National ID",
+            type: "National ID",
+        },
+    ],
 });
 
 export const holder = new VcHolder({

@@ -52,10 +52,17 @@ export class VcHolder {
         );
         const { data } = await axios.get(metadataEndpoint);
         const { data: oauthServerMetadata } = await axios.get(oauthMetadataUrl);
-        return {
+        const metadata = {
             ...snakeToCamelRecursive(data),
             ...snakeToCamelRecursive(oauthServerMetadata),
         };
+
+        const display =
+            metadata.display &&
+            metadata.display.find((d: any) => d.locale === "en-US");
+        metadata.display = display;
+
+        return metadata;
     }
 
     async retrieveCredential(
@@ -64,22 +71,33 @@ export class VcHolder {
         credentials: string[],
         proof: string
     ): Promise<string[]> {
-        const { data } = await axios.post(
-            path,
-            {
-                format: "jwt_vc_json",
-                credentials,
-                proof: {
-                    proof_type: "jwt",
-                    jwt: proof,
-                },
+        const payload =
+            credentials.length > 1
+                ? {
+                      credential_requests: [
+                          ...credentials.map((c) => ({
+                              format: "jwt_vc_json",
+                              //   credentials,
+                              proof: {
+                                  proof_type: "jwt",
+                                  jwt: proof,
+                              },
+                          })),
+                      ],
+                  }
+                : {
+                      format: "jwt_vc_json",
+                      //   credentials,
+                      proof: {
+                          proof_type: "jwt",
+                          jwt: proof,
+                      },
+                  };
+        const { data } = await axios.post(path, payload, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
             },
-            {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            }
-        );
+        });
         const response =
             Object.keys(credentials).length > 1
                 ? data.credential_responses.map(

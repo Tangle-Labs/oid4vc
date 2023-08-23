@@ -40,6 +40,10 @@ export function startServer(port = 5000) {
 
     app.route("/api/credential").post(
         asyncHandler(async (req, res) => {
+            await issuer.validateCredentialsResponse({
+                token: req.headers.authorization?.split("Bearer ")[1],
+                proof: req.body.proof.jwt,
+            });
             const response = await issuer.createSendCredentialsResponse({
                 credentials: credentials,
             });
@@ -55,6 +59,10 @@ export function startServer(port = 5000) {
 
     app.route("/api/credentials").post(
         asyncHandler(async (req, res) => {
+            await issuer.validateCredentialsResponse({
+                token: req.headers.authorization?.split("Bearer ")[1],
+                proof: req.body.credential_requests[0].proof.jwt,
+            });
             const response = await issuer.createSendCredentialsResponse({
                 credentials: [...credentials, ...credentials],
             });

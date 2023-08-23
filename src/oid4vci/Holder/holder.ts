@@ -64,22 +64,33 @@ export class VcHolder {
         credentials: string[],
         proof: string
     ): Promise<string[]> {
-        const { data } = await axios.post(
-            path,
-            {
-                format: "jwt_vc_json",
-                credentials,
-                proof: {
-                    proof_type: "jwt",
-                    jwt: proof,
-                },
+        const payload =
+            credentials.length > 1
+                ? {
+                      credential_requests: [
+                          ...credentials.map((c) => ({
+                              format: "jwt_vc_json",
+                              //   credentials,
+                              proof: {
+                                  proof_type: "jwt",
+                                  jwt: proof,
+                              },
+                          })),
+                      ],
+                  }
+                : {
+                      format: "jwt_vc_json",
+                      //   credentials,
+                      proof: {
+                          proof_type: "jwt",
+                          jwt: proof,
+                      },
+                  };
+        const { data } = await axios.post(path, payload, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
             },
-            {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            }
-        );
+        });
         const response =
             Object.keys(credentials).length > 1
                 ? data.credential_responses.map(

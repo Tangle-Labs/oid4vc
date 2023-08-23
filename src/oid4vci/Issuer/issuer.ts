@@ -53,10 +53,13 @@ export class VcIssuer {
             credential_endpoint: this.metadata.credentialEndpoint,
             batch_credential_endpoint: this.metadata.batchCredentialEndpoint,
             credentials_supported,
-            display: {
-                logo_uri: this.metadata.logoUri,
-                client_name: this.metadata.clientName,
-            },
+            display: [
+                {
+                    locale: "en-US",
+                    logo_uri: this.metadata.logoUri,
+                    client_name: this.metadata.clientName,
+                },
+            ],
         };
     }
 

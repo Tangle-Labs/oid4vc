@@ -52,10 +52,15 @@ export class VcHolder {
         );
         const { data } = await axios.get(metadataEndpoint);
         const { data: oauthServerMetadata } = await axios.get(oauthMetadataUrl);
-        return {
+        const metadata = {
             ...snakeToCamelRecursive(data),
             ...snakeToCamelRecursive(oauthServerMetadata),
         };
+
+        const display = metadata.display.find((d: any) => d.locale === "en-US");
+        metadata.display = display;
+
+        return metadata;
     }
 
     async retrieveCredential(

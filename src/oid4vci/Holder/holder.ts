@@ -57,7 +57,9 @@ export class VcHolder {
             ...snakeToCamelRecursive(oauthServerMetadata),
         };
 
-        const display = metadata.display.find((d: any) => d.locale === "en-US");
+        const display =
+            metadata.display &&
+            metadata.display.find((d: any) => d.locale === "en-US");
         metadata.display = display;
 
         return metadata;

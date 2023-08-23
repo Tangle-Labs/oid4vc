@@ -48,19 +48,23 @@ export class VcIssuer {
             },
             scope: cred.name,
         }));
-        return {
+        const metadata = {
             credential_issuer: this.metadata.credentialIssuer,
             credential_endpoint: this.metadata.credentialEndpoint,
             batch_credential_endpoint: this.metadata.batchCredentialEndpoint,
             credentials_supported,
-            display: [
+        };
+
+        if (this.metadata.clientName || this.metadata.logoUri)
+            // @ts-ignore
+            metadata.display = [
                 {
                     locale: "en-US",
                     logo_uri: this.metadata.logoUri,
                     client_name: this.metadata.clientName,
                 },
-            ],
-        };
+            ];
+        return metadata;
     }
 
     getOauthServerMetadata() {

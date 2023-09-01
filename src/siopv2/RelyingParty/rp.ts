@@ -11,6 +11,7 @@ import { PresentationDefinitionV2 } from "@sphereon/pex-models";
 import { buildSigner } from "../../utils/signer";
 import { Resolvable } from "did-resolver";
 import { camelToSnakeRecursive } from "../../utils/object";
+import { nanoid } from "nanoid";
 
 export class RelyingParty {
     private metadata: RPOptions;
@@ -54,9 +55,15 @@ export class RelyingParty {
             scope: "openid",
             responseMode: "post",
         };
+
+        const nonce = nanoid();
         const { clientId, ...rest } = requestData;
 
-        const requestParams = camelToSnakeRecursive(rest);
+        const requestParams = camelToSnakeRecursive({
+            ...rest,
+            clientId,
+            nonce,
+        });
         let requestQuery: {
             clientId: string;
             request?: string;

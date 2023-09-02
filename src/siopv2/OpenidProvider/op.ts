@@ -76,10 +76,8 @@ export class OpenidProvider {
     }
 
     private async decodeVcJwt(jwt: string) {
-        const {
-            payload: { vc },
-        } = didJWT.decodeJWT(jwt);
-        return vc;
+        const { payload } = didJWT.decodeJWT(jwt);
+        return payload;
     }
 
     async getCredentialsFromRequest(request: string, credentials: any[]) {
@@ -105,7 +103,7 @@ export class OpenidProvider {
     ) {
         const pex = new PEX();
         const rawCredentials = await Promise.all(
-            credentials.map(async (c) => this.decodeVcJwt(c))
+            credentials.map(async (c) => this.decodeVcJwt(c) as any)
         );
         pex.evaluateCredentials(presentationDefinition, rawCredentials);
         const { presentation, presentationSubmission } = pex.presentationFrom(
@@ -117,7 +115,7 @@ export class OpenidProvider {
         const selectedCreds = await Promise.all(
             credentials.filter(async (c) => {
                 presentation.verifiableCredential.includes(
-                    await this.decodeVcJwt(c)
+                    (await this.decodeVcJwt(c)) as any
                 );
             })
         );

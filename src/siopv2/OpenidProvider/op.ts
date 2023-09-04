@@ -8,6 +8,7 @@ import { buildSigner } from "../../utils/signer";
 import { Resolvable } from "did-resolver";
 import { SiopRequest } from "../index.types";
 import { snakeToCamelRecursive } from "../../utils/object";
+import { normalizePresentationDefinition } from "../../utils/definition";
 
 export class OpenidProvider {
     private did: string;
@@ -87,7 +88,9 @@ export class OpenidProvider {
         if (requestOptions.responseType !== "vp_token")
             throw new Error("invalid response type");
         const selected = pex.selectFrom(
-            requestOptions.presentationDefinition,
+            normalizePresentationDefinition(
+                requestOptions.presentationDefinition
+            ),
             credentials
         );
         if (selected.areRequiredCredentialsPresent === "error")
@@ -109,10 +112,8 @@ export class OpenidProvider {
             presentationDefinition,
             rawCredentials
         );
-        console.log(JSON.stringify(presentationDefinition), rawCredentials);
         if (evaluation.areRequiredCredentialsPresent === "error")
             throw new Error("credentials are not present");
-        console.log("eval", evaluation);
         const { presentation, presentationSubmission } = pex.presentationFrom(
             presentationDefinition,
             rawCredentials,
@@ -143,7 +144,9 @@ export class OpenidProvider {
         } else if (requestOptions.responseType === "vp_token") {
             if (!credentials) throw new Error("credentials not passed");
             response = await this.createVPTokenResponse(
-                requestOptions.presentationDefinition,
+                normalizePresentationDefinition(
+                    requestOptions.presentationDefinition
+                ),
                 credentials,
                 requestOptions
             );
@@ -154,7 +157,6 @@ export class OpenidProvider {
             state: requestOptions.state,
         };
         await axios.post(requestOptions.redirectUri, response).catch((e) => {
-            console.log(e);
             throw new Error("unable to send response");
         });
 

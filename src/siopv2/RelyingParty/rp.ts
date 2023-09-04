@@ -12,6 +12,7 @@ import { buildSigner } from "../../utils/signer";
 import { Resolvable } from "did-resolver";
 import { camelToSnakeRecursive } from "../../utils/object";
 import { nanoid } from "nanoid";
+import { normalizePresentationDefinition } from "../../utils/definition";
 
 export class RelyingParty {
     private metadata: RPOptions;
@@ -122,7 +123,7 @@ export class RelyingParty {
         ) {
             const pex = new PEX();
             const result = pex.evaluatePresentation(
-                presentationDefinition,
+                normalizePresentationDefinition(presentationDefinition),
                 authResponse.vp_token,
                 {
                     generatePresentationSubmission: true,

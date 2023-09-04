@@ -120,25 +120,16 @@ export class RelyingParty {
             authResponse.vp_token &&
             authResponse.presentation_submission
         ) {
-            const { vp } = await this.validateJwt(authResponse.vp_token);
-            const verifiableCredential = Array.isArray(vp.verifiableCredential)
-                ? await Promise.all(
-                      vp.verifiableCredential.map(
-                          async (vc: string) => (await this.validateJwt(vc)).vc
-                      )
-                  )
-                : await this.validateJwt(vp.verifiableCredential);
-            const presentation = { ...vp, verifiableCredential };
             const pex = new PEX();
-            const { areRequiredCredentialsPresent } = pex.evaluatePresentation(
+            const result = pex.evaluatePresentation(
                 presentationDefinition,
-                presentation,
+                authResponse.vp_token,
                 {
                     generatePresentationSubmission: true,
                 }
             );
 
-            if (areRequiredCredentialsPresent === "error")
+            if (result.areRequiredCredentialsPresent === "error")
                 throw new Error("Invalid Credentials Shared");
         }
     }

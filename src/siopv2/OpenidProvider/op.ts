@@ -105,7 +105,14 @@ export class OpenidProvider {
         const rawCredentials = await Promise.all(
             credentials.map(async (c) => this.decodeVcJwt(c) as any)
         );
-        pex.evaluateCredentials(presentationDefinition, rawCredentials);
+        const evaluation = pex.evaluateCredentials(
+            presentationDefinition,
+            rawCredentials
+        );
+        console.log(JSON.stringify(presentationDefinition), rawCredentials);
+        if (evaluation.areRequiredCredentialsPresent === "error")
+            throw new Error("credentials are not present");
+        console.log("eval", evaluation);
         const { presentation, presentationSubmission } = pex.presentationFrom(
             presentationDefinition,
             rawCredentials,
@@ -146,7 +153,8 @@ export class OpenidProvider {
             nonce: requestOptions.nonce,
             state: requestOptions.state,
         };
-        await axios.post(requestOptions.redirectUri, response).catch(() => {
+        await axios.post(requestOptions.redirectUri, response).catch((e) => {
+            console.log(e);
             throw new Error("unable to send response");
         });
 

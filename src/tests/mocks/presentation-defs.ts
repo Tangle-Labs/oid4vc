@@ -6,7 +6,7 @@ export const presentationDefinition = {
             constraints: {
                 fields: [
                     {
-                        path: ["$.type"],
+                        path: ["$.vc.type"],
                         filter: {
                             type: "array",
                             contains: {

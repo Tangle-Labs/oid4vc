@@ -8,6 +8,7 @@ import { buildSigner } from "../../utils/signer";
 import { Resolvable } from "did-resolver";
 import { SiopRequest } from "../index.types";
 import { snakeToCamelRecursive } from "../../utils/object";
+import { normalizePresentationDefinition } from "../../utils/definition";
 
 export class OpenidProvider {
     private did: string;
@@ -87,7 +88,9 @@ export class OpenidProvider {
         if (requestOptions.responseType !== "vp_token")
             throw new Error("invalid response type");
         const selected = pex.selectFrom(
-            requestOptions.presentationDefinition,
+            normalizePresentationDefinition(
+                requestOptions.presentationDefinition
+            ),
             credentials
         );
         if (selected.areRequiredCredentialsPresent === "error")
@@ -105,7 +108,12 @@ export class OpenidProvider {
         const rawCredentials = await Promise.all(
             credentials.map(async (c) => this.decodeVcJwt(c) as any)
         );
-        pex.evaluateCredentials(presentationDefinition, rawCredentials);
+        const evaluation = pex.evaluateCredentials(
+            presentationDefinition,
+            rawCredentials
+        );
+        if (evaluation.areRequiredCredentialsPresent === "error")
+            throw new Error("credentials are not present");
         const { presentation, presentationSubmission } = pex.presentationFrom(
             presentationDefinition,
             rawCredentials,
@@ -136,7 +144,9 @@ export class OpenidProvider {
         } else if (requestOptions.responseType === "vp_token") {
             if (!credentials) throw new Error("credentials not passed");
             response = await this.createVPTokenResponse(
-                requestOptions.presentationDefinition,
+                normalizePresentationDefinition(
+                    requestOptions.presentationDefinition
+                ),
                 credentials,
                 requestOptions
             );
@@ -146,7 +156,7 @@ export class OpenidProvider {
             nonce: requestOptions.nonce,
             state: requestOptions.state,
         };
-        await axios.post(requestOptions.redirectUri, response).catch(() => {
+        await axios.post(requestOptions.redirectUri, response).catch((e) => {
             throw new Error("unable to send response");
         });
 

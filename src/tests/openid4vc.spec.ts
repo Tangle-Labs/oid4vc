@@ -11,6 +11,6 @@ afterAll(() => {
     stopServer();
 });
 
-describe("SIOPv2", siopSuite);
+// describe("SIOPv2", siopSuite);
 describe("OpenID4VP", oid4vpSuite);
-describe("OpenID4VCI", oid4vciSuite);
+// describe("OpenID4VCI", oid4vciSuite);

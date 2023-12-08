@@ -37,7 +37,7 @@ export const oid4vciSuite = () => {
     test("create single credential offer by reference", async () => {
         singleCredOfferByReference = await issuer.createCredentialOffer({
             requestBy: "reference",
-            credentialOfferUri: "http://localhost:5000/api/offers/single",
+            credentialOfferUri: "http://localhost:5999/api/offers/single",
             credentials: ["wa_driving_license"],
         });
         offersMap.set("single", singleCredOfferByReference.offer);
@@ -53,7 +53,7 @@ export const oid4vciSuite = () => {
     test("create batch credential offer by reference", async () => {
         batchCredOfferByReference = await issuer.createCredentialOffer({
             requestBy: "reference",
-            credentialOfferUri: "http://localhost:5000/api/offers/batch",
+            credentialOfferUri: "http://localhost:5999/api/offers/batch",
             credentials: ["wa_driving_license", "wa_driving_license"],
         });
         offersMap.set("batch", batchCredOfferByReference.offer);

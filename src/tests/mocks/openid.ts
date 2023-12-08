@@ -23,7 +23,7 @@ export const op = new OpenidProvider({
 export const rp = new RelyingParty({
     ...testingKeys.rp,
     clientId: "tanglelabs.io",
-    redirectUri: "http://localhost:5000/api/auth",
+    redirectUri: "http://localhost:5999/api/auth",
     clientMetadata: {
         idTokenSigningAlgValuesSupported: [SigningAlgs.EdDSA],
         subjectSyntaxTypesSupported: ["did:iota"],
@@ -48,14 +48,14 @@ const writer = async (data: IssuerStoreData[]) => {
 
 export const issuer = new VcIssuer({
     ...testingKeys.rp,
-    batchCredentialEndpoint: "http://localhost:5000/api/credentials",
-    credentialEndpoint: "http://localhost:5000/api/credential",
-    credentialIssuer: "http://localhost:5000/",
+    batchCredentialEndpoint: "http://localhost:5999/api/credentials",
+    credentialEndpoint: "http://localhost:5999/api/credential",
+    credentialIssuer: "http://localhost:5999/",
     proofTypesSupported: ["jwt"],
-    cryptographicBindingMethodsSupported: ["did:iota"],
+    cryptographicBindingMethodsSupported: ["did:key"],
     cryptographicSuitesSupported: ["EdDSA"],
     resolver,
-    tokenEndpoint: "http://localhost:5000/token",
+    tokenEndpoint: "http://localhost:5999/token",
     store: new SimpleStore({ reader, writer }),
     supportedCredentials: [
         {

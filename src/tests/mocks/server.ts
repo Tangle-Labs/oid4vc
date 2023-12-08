@@ -9,7 +9,7 @@ export const requestsMap = new Map<string, string>();
 export const offersMap = new Map<string, Record<string, any>>();
 let server: Server;
 
-export function startServer(port = 5000) {
+export function startServer(port = 5999) {
     const app = express();
     app.use(express.json());
     app.route("/siop/:id").get(

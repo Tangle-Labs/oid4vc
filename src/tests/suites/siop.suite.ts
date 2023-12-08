@@ -29,7 +29,7 @@ export const siopSuite = () => {
         const id = nanoid();
         const rawRequest = await rp.createRequest({
             requestBy: "reference",
-            requestUri: `http://localhost:5000/siop/${id}`,
+            requestUri: `http://localhost:5999/siop/${id}`,
             responseType: "id_token",
         });
         requestByReference = rawRequest.uri;

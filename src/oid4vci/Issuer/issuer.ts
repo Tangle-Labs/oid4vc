@@ -47,6 +47,7 @@ export class VcIssuer {
                 type: ["VerifiableCredential", cred.type],
             },
             scope: cred.name,
+            ...cred.raw,
         }));
         const metadata = {
             credential_issuer: this.metadata.credentialIssuer,

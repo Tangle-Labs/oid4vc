@@ -50,6 +50,7 @@ export class VcHolder {
             offerRaw.credentialIssuer,
             ".well-known/oauth-authorization-server"
         );
+        console.log(oauthMetadataUrl);
         const { data } = await axios.get(metadataEndpoint);
         const { data: oauthServerMetadata } = await axios.get(oauthMetadataUrl);
         const metadata = {
@@ -112,12 +113,14 @@ export class VcHolder {
         const offer = await this.parseCredentialOffer(credentialOffer);
         const { grants, credentialIssuer, credentials } = offer;
         const metadata = await this.retrieveMetadata(credentialOffer);
+        console.log("retrieving meta");
         const createTokenPayload: { preAuthCode: any; userPin?: number } = {
             preAuthCode:
                 grants["urn:ietf:params:oauth:grant-type:pre-authorized_code"][
                     "pre-authorized_code"
                 ],
         };
+        console.log("token payload", createTokenPayload);
 
         if (
             grants["urn:ietf:params:oauth:grant-type:pre-authorized_code"][
@@ -126,12 +129,16 @@ export class VcHolder {
         )
             createTokenPayload.userPin = Number(pin);
 
+        console.log("sending token request");
         const tokenRequest = await this.createTokenRequest(createTokenPayload);
+        console.log(tokenRequest, metadata.tokenEndpoint);
 
         const tokenResponse = await axios.post(
             metadata.tokenEndpoint,
             tokenRequest
         );
+
+        console.log(tokenResponse);
 
         const token = await didJWT.createJWT(
             {

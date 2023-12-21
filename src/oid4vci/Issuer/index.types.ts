@@ -8,7 +8,7 @@ type ProofTypes = "jwt";
 export type SupportedCredentials = {
     name: string;
     type: string;
-    raw: Record<string, any>;
+    raw?: Record<string, any>;
 };
 
 export type VcIssuerOptions = {

@@ -32,6 +32,7 @@ type CreateCredentialOfferByValue = {
     requestBy: "value";
     credentials: string[];
     pinRequired?: boolean;
+    expiresIn?: number;
 };
 
 type CreateCredentialOfferByReference = {
@@ -39,6 +40,7 @@ type CreateCredentialOfferByReference = {
     credentialOfferUri: string;
     credentials: string[];
     pinRequired?: boolean;
+    expiresIn?: number;
 };
 
 export type CreateCredentialOfferOptions =

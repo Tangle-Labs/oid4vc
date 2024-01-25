@@ -85,14 +85,18 @@ export class OpenidProvider {
         const pex = new PEX();
 
         const requestOptions = await this.getRequestFromOffer(request);
+
         if (requestOptions.responseType !== "vp_token")
             throw new Error("invalid response type");
+
+        // console.log(credentials[credentials.length - 1]);
         const selected = pex.selectFrom(
             normalizePresentationDefinition(
                 requestOptions.presentationDefinition
             ),
             credentials
         );
+        console.log("tf", selected);
         if (selected.areRequiredCredentialsPresent === "error")
             throw new Error("credentials not found");
 

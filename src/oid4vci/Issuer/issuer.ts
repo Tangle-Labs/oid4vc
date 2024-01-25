@@ -89,12 +89,14 @@ export class VcIssuer {
 
         const id = nanoid();
 
+        const expiresIn = args.expiresIn ?? 24 * 60 * 60;
+
         const code = await didJWT.createJWT(
             { id, iat: Math.floor(Date.now() / 1000), ...extras },
             {
                 issuer: this.did,
                 signer: this.signer,
-                expiresIn: 24 * 60 * 60,
+                expiresIn,
             },
             { alg: "EdDSA", kid: this.kid }
         );

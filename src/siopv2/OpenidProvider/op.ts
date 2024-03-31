@@ -21,7 +21,7 @@ export class OpenidProvider {
         this.did = args.did;
         this.kid = args.kid;
         this.privKeyHex = args.privKeyHex;
-        this.signer = buildSigner(this.privKeyHex);
+        this.signer = args.signer ?? buildSigner(this.privKeyHex);
         this.resolver = args.resolver;
     }
 
@@ -89,14 +89,12 @@ export class OpenidProvider {
         if (requestOptions.responseType !== "vp_token")
             throw new Error("invalid response type");
 
-        // console.log(credentials[credentials.length - 1]);
         const selected = pex.selectFrom(
             normalizePresentationDefinition(
                 requestOptions.presentationDefinition
             ),
             credentials
         );
-        console.log("tf", selected);
         if (selected.areRequiredCredentialsPresent === "error")
             throw new Error("credentials not found");
 

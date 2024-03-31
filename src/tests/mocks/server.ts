@@ -33,7 +33,9 @@ export function startServer(port = 5999) {
 
     app.route("/token").post(
         asyncHandler(async (req, res) => {
-            const response = await issuer.createTokenResponse(req.body);
+            const response = await issuer
+                .createTokenResponse(req.body)
+                .catch((e) => console.log(e));
             res.json(response);
         })
     );

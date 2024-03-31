@@ -1,6 +1,6 @@
 {
   "name": "@tanglelabs/oid4vc",
-  "version": "0.1.11",
+  "version": "0.2.0",
   "main": "dist/index.js",
   "license": "MIT",
   "type": "module",

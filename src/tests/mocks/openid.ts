@@ -7,6 +7,7 @@ import {
     SimpleStore,
     VcHolder,
     VcIssuer,
+    buildSigner,
 } from "../..";
 import { resolver } from "./iota-resolver";
 import { testingKeys } from "./keys.mock";
@@ -15,21 +16,6 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-export const op = new OpenidProvider({
-    ...testingKeys.op,
-    resolver,
-});
-export const rp = new RelyingParty({
-    ...testingKeys.rp,
-    clientId: "tanglelabs.io",
-    redirectUri: "http://localhost:5999/api/auth",
-    clientMetadata: {
-        idTokenSigningAlgValuesSupported: [SigningAlgs.EdDSA],
-        subjectSyntaxTypesSupported: ["did:iota"],
-    },
-    resolver,
-});
 
 const file = path.resolve(__dirname, "./store.test-mock");
 
@@ -46,8 +32,7 @@ const writer = async (data: IssuerStoreData[]) => {
     await writeFile(file, JSON.stringify(data));
 };
 
-export const issuer = new VcIssuer({
-    ...testingKeys.rp,
+const baseIssuerConfig = {
     batchCredentialEndpoint: "http://localhost:5999/api/credentials",
     credentialEndpoint: "http://localhost:5999/api/credential",
     credentialIssuer: "http://localhost:5999/",
@@ -63,8 +48,65 @@ export const issuer = new VcIssuer({
             type: "National ID",
         },
     ],
+};
+
+const baseRpConfig = {
+    clientId: "tanglelabs.io",
+    redirectUri: "http://localhost:5999/api/auth",
+    clientMetadata: {
+        idTokenSigningAlgValuesSupported: [SigningAlgs.EdDSA],
+        subjectSyntaxTypesSupported: ["did:iota"],
+    },
+    resolver,
+};
+
+export const rp = new RelyingParty({
+    ...testingKeys.rp,
+    ...baseRpConfig,
+});
+
+export const op = new OpenidProvider({
+    ...testingKeys.op,
+    resolver,
+});
+
+const externalOpSigner = buildSigner(testingKeys.op.privKeyHex);
+const externalRpSigner = buildSigner(testingKeys.rp.privKeyHex);
+
+// @ts-ignore
+export const issuer = new VcIssuer({
+    ...testingKeys.rp,
+    ...baseIssuerConfig,
 });
 
 export const holder = new VcHolder({
     ...testingKeys.op,
+});
+
+export const externalOp = new OpenidProvider({
+    did: testingKeys.op.did,
+    kid: testingKeys.op.kid,
+    signer: externalOpSigner,
+    resolver,
+});
+
+export const externalRp = new RelyingParty({
+    did: testingKeys.rp.did,
+    kid: testingKeys.rp.kid,
+    signer: externalRpSigner,
+    ...baseRpConfig,
+});
+
+// @ts-ignore
+export const externalIssuer = new VcIssuer({
+    did: testingKeys.rp.did,
+    kid: testingKeys.rp.kid,
+    signer: externalRpSigner,
+    ...baseIssuerConfig,
+});
+
+export const externalHolder = new VcHolder({
+    did: testingKeys.op.did,
+    kid: testingKeys.op.kid,
+    signer: externalOpSigner,
 });

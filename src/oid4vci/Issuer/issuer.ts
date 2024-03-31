@@ -27,7 +27,7 @@ export class VcIssuer {
         const { store, did, privKeyHex, kid, ...others } = options;
         this.metadata = others;
         this.store = store;
-        this.signer = buildSigner(options.privKeyHex);
+        this.signer = options.signer ?? buildSigner(options.privKeyHex);
         this.did = did;
         this.kid = kid;
         this.resolver = options.resolver;

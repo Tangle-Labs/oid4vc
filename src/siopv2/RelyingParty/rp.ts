@@ -33,7 +33,7 @@ export class RelyingParty {
         this.did = args.did;
         this.kid = args.kid;
         this.privKeyHex = args.privKeyHex;
-        this.signer = buildSigner(this.privKeyHex);
+        this.signer = args.signer ?? buildSigner(this.privKeyHex);
         this.resolver = args.resolver;
     }
 

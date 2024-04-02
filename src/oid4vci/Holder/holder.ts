@@ -108,10 +108,23 @@ export class VcHolder {
         return response;
     }
 
+    private checkArrayOverlap(items: string[], haystack: string[]) {
+        return items.every((i) => haystack.includes(i));
+    }
+
     async getCredentialFromOffer(credentialOffer: string, pin?: number) {
         const offer = await this.parseCredentialOffer(credentialOffer);
-        const { grants, credentialIssuer, credentials } = offer;
+        const { grants, credentialIssuer, credentialConfigurationIds } = offer;
         const metadata = await this.retrieveMetadata(credentialOffer);
+
+        const credentialConfigsExist = this.checkArrayOverlap(
+            credentialConfigurationIds,
+            Object.keys(metadata.credentialConfigurationsSupported)
+        );
+
+        if (!credentialConfigsExist)
+            throw new Error("unsupported_credential_type");
+
         const createTokenPayload: { preAuthCode: any; userPin?: number } = {
             preAuthCode:
                 grants["urn:ietf:params:oauth:grant-type:pre-authorized_code"][
@@ -143,14 +156,14 @@ export class VcHolder {
         );
 
         const endpoint =
-            Object.keys(credentials).length > 1
+            Object.keys(credentialConfigurationIds).length > 1
                 ? metadata.batchCredentialEndpoint
                 : metadata.credentialEndpoint;
 
         return this.retrieveCredential(
             endpoint,
             tokenResponse.data.access_token,
-            credentials,
+            credentialConfigurationIds,
             token
         );
     }

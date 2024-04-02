@@ -7,7 +7,15 @@ type ProofTypes = "jwt";
 
 export type SupportedCredentials = {
     name: string;
-    type: string;
+    type: string[];
+    display?: {
+        name?: string;
+        locale?: string;
+        logo?: {
+            uri: string;
+            alt_text?: string;
+        };
+    }[];
     raw?: Record<string, any>;
 };
 
@@ -17,7 +25,7 @@ export type VcIssuerOptions = {
     batchCredentialEndpoint: string;
     credentialIssuer: string;
     cryptographicBindingMethodsSupported: CryptographicMethods[];
-    cryptographicSuitesSupported: CryptographicSuites[];
+    credentialSigningAlgValuesSupported: CryptographicSuites[];
     proofTypesSupported: ProofTypes[];
     store: IIssuerStore<IssuerStoreData>;
     logoUri?: string;

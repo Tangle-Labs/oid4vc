@@ -1,4 +1,8 @@
-const ignoreTransformList = ["presentation_definition", "grants"];
+const ignoreTransformList = [
+    "presentation_definition",
+    "grants",
+    "credential_configurations_supported",
+];
 
 export function camelToSnakeRecursive(
     input: Record<string, any>

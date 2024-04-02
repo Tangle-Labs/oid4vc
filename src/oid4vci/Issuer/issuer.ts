@@ -7,6 +7,7 @@ import {
     CreateCredentialOfferOptions,
     IIssuerStore,
     IssuerStoreData,
+    SupportedCredentials,
     VcIssuerOptions,
 } from "./index.types";
 import { generatePin } from "../../utils/pin";
@@ -25,7 +26,13 @@ export class VcIssuer {
 
     constructor(options: VcIssuerOptions) {
         const { store, did, privKeyHex, kid, ...others } = options;
+        const proofTypes = this.transformProofs(
+            others.proofTypesSupported,
+            others.credentialSigningAlgValuesSupported
+        );
         this.metadata = others;
+        // @ts-ignore
+        this.metadata.proofTypesSupported = proofTypes;
         this.store = store;
         this.signer = options.signer ?? buildSigner(options.privKeyHex);
         this.did = did;
@@ -33,27 +40,48 @@ export class VcIssuer {
         this.resolver = options.resolver;
     }
 
-    getIssuerMetadata() {
-        const supportedCredentialsArray =
-            this.metadata.supportedCredentials ?? [];
-        const credentials_supported = supportedCredentialsArray.map((cred) => ({
-            format: "jwt_vc_json",
-            cryptographic_binding_methods_supported:
-                this.metadata.cryptographicBindingMethodsSupported,
-            cryprographic_suites_supported:
-                this.metadata.cryptographicSuitesSupported,
-            proof_types_supported: this.metadata.proofTypesSupported,
-            credential_definition: {
-                type: ["VerifiableCredential", cred.type],
-            },
-            scope: cred.name,
-            ...cred.raw,
-        }));
+    transformProofs(proofs: string[], algValues: string[]) {
+        const proofsMap = {};
+        proofs.forEach(
+            (p) =>
+                // @ts-ignore
+                (proofsMap[p] = {
+                    proof_signing_alg_values_supported: algValues,
+                })
+        );
+        return proofsMap;
+    }
+
+    getIssuerMetadata(credentials: SupportedCredentials[] = []) {
+        const supportedCredentialsArray = [
+            ...(this.metadata.supportedCredentials ?? []),
+            ...credentials,
+        ];
+        const credential_configurations_supported: Record<
+            string,
+            Record<string, any>
+        > = {};
+        supportedCredentialsArray.forEach(
+            (cred) =>
+                (credential_configurations_supported[cred.name] = {
+                    format: "jwt_vc_json",
+                    cryptographic_binding_methods_supported:
+                        this.metadata.cryptographicBindingMethodsSupported,
+                    credential:
+                        this.metadata.credentialSigningAlgValuesSupported,
+                    proof_types_supported: this.metadata.proofTypesSupported,
+                    credential_definition: {
+                        type: ["VerifiableCredential", ...cred.type],
+                    },
+                    scope: cred.name,
+                    display: cred.display,
+                })
+        );
         const metadata = {
             credential_issuer: this.metadata.credentialIssuer,
             credential_endpoint: this.metadata.credentialEndpoint,
             batch_credential_endpoint: this.metadata.batchCredentialEndpoint,
-            credentials_supported,
+            credential_configurations_supported,
         };
 
         if (this.metadata.clientName || this.metadata.logoUri)
@@ -104,14 +132,18 @@ export class VcIssuer {
         const offer = camelToSnakeCaseRecursive({
             credentialIssuer: this.metadata.credentialIssuer,
             ...options,
-            credentials: [...credentials],
+            credentialConfigurationIds: [...credentials],
             grants: {
                 "urn:ietf:params:oauth:grant-type:pre-authorized_code": {
                     "pre-authorized_code": code,
-                    user_pin_required: pinNeeded,
                 },
             },
         });
+        if (pinNeeded)
+            offer.grants.tx_code = {
+                length: 6,
+                input_mode: "numeric",
+            };
         const pin = args.pinRequired ? generatePin() : null;
         const jsonEmbed =
             requestBy === "value"

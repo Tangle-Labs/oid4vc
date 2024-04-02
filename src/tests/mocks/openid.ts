@@ -38,16 +38,11 @@ const baseIssuerConfig = {
     credentialIssuer: "http://localhost:5999/",
     proofTypesSupported: ["jwt"],
     cryptographicBindingMethodsSupported: ["did:key"],
-    cryptographicSuitesSupported: ["EdDSA"],
+    credentialSigningAlgValuesSupported: ["EdDSA"],
     resolver,
     tokenEndpoint: "http://localhost:5999/token",
     store: new SimpleStore({ reader, writer }),
-    supportedCredentials: [
-        {
-            name: "National ID",
-            type: "National ID",
-        },
-    ],
+    supportedCredentials: {},
 };
 
 const baseRpConfig = {
@@ -77,6 +72,17 @@ const externalRpSigner = buildSigner(testingKeys.rp.privKeyHex);
 export const issuer = new VcIssuer({
     ...testingKeys.rp,
     ...baseIssuerConfig,
+    supportedCredentials: [
+        {
+            name: "wa_driving_license",
+            type: ["wa_driving_license"],
+            display: [
+                {
+                    name: "Washington Driving License",
+                },
+            ],
+        },
+    ],
 });
 
 export const holder = new VcHolder({

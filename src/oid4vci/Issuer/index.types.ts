@@ -12,7 +12,7 @@ export type SupportedCredentials = {
         name?: string;
         locale?: string;
         logo?: {
-            uri: string;
+            url: string;
             alt_text?: string;
         };
     }[];

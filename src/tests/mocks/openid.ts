@@ -1,13 +1,13 @@
 import { readFile, writeFile } from "fs/promises";
 import {
-    IssuerStoreData,
-    OpenidProvider,
-    RelyingParty,
-    SigningAlgs,
-    SimpleStore,
-    VcHolder,
-    VcIssuer,
-    buildSigner,
+  IssuerStoreData,
+  OpenidProvider,
+  RelyingParty,
+  SigningAlgs,
+  SimpleStore,
+  VcHolder,
+  VcIssuer,
+  buildSigner,
 } from "../..";
 import { resolver } from "./iota-resolver";
 import { testingKeys } from "./keys.mock";
@@ -21,48 +21,53 @@ const file = path.resolve(__dirname, "./store.test-mock");
 
 // @ts-ignore
 const reader = async () => {
-    const raw = await readFile(file).catch((e) => {
-        if (e.code === "ENOENT") writer([]);
-        return Buffer.from(JSON.stringify([]));
-    });
-    return JSON.parse(raw.toString());
+  const raw = await readFile(file).catch((e) => {
+    if (e.code === "ENOENT") writer([]);
+    return Buffer.from(JSON.stringify([]));
+  });
+  return JSON.parse(raw.toString());
 };
 
 const writer = async (data: IssuerStoreData[]) => {
-    await writeFile(file, JSON.stringify(data));
+  await writeFile(file, JSON.stringify(data));
 };
 
 const baseIssuerConfig = {
-    batchCredentialEndpoint: "http://localhost:5999/api/credentials",
-    credentialEndpoint: "http://localhost:5999/api/credential",
-    credentialIssuer: "http://localhost:5999/",
-    proofTypesSupported: ["jwt"],
-    cryptographicBindingMethodsSupported: ["did:key"],
-    credentialSigningAlgValuesSupported: ["EdDSA"],
-    resolver,
-    tokenEndpoint: "http://localhost:5999/token",
-    store: new SimpleStore({ reader, writer }),
-    supportedCredentials: {},
+  batchCredentialEndpoint: "http://localhost:5999/api/credentials",
+  credentialEndpoint: "http://localhost:5999/api/credential",
+  credentialIssuer: "http://localhost:5999/",
+  proofTypesSupported: ["jwt"],
+  cryptographicBindingMethodsSupported: ["did:key"],
+  credentialSigningAlgValuesSupported: ["EdDSA"],
+  resolver,
+  tokenEndpoint: "http://localhost:5999/token",
+  store: new SimpleStore({ reader, writer }),
+  supportedCredentials: {},
 };
 
 const baseRpConfig = {
-    clientId: "tanglelabs.io",
-    redirectUri: "http://localhost:5999/api/auth",
-    clientMetadata: {
-        idTokenSigningAlgValuesSupported: [SigningAlgs.EdDSA],
-        subjectSyntaxTypesSupported: ["did:iota"],
+  clientId: "tanglelabs.io",
+  redirectUri: "http://localhost:5999/api/auth",
+  clientMetadata: {
+    idTokenSigningAlgValuesSupported: [SigningAlgs.EdDSA],
+    subjectSyntaxTypesSupported: ["did:iota"],
+    vpFormats: {
+      jwt_vc_json: {
+        alg: ["EdDSA"],
+      },
     },
-    resolver,
+  },
+  resolver,
 };
 
 export const rp = new RelyingParty({
-    ...testingKeys.rp,
-    ...baseRpConfig,
+  ...testingKeys.rp,
+  ...baseRpConfig,
 });
 
 export const op = new OpenidProvider({
-    ...testingKeys.op,
-    resolver,
+  ...testingKeys.op,
+  resolver,
 });
 
 const externalOpSigner = buildSigner(testingKeys.op.privKeyHex);
@@ -70,49 +75,49 @@ const externalRpSigner = buildSigner(testingKeys.rp.privKeyHex);
 
 // @ts-ignore
 export const issuer = new VcIssuer({
-    ...testingKeys.rp,
-    ...baseIssuerConfig,
-    supportedCredentials: [
+  ...testingKeys.rp,
+  ...baseIssuerConfig,
+  supportedCredentials: [
+    {
+      name: "wa_driving_license",
+      type: ["wa_driving_license"],
+      display: [
         {
-            name: "wa_driving_license",
-            type: ["wa_driving_license"],
-            display: [
-                {
-                    name: "Washington Driving License",
-                },
-            ],
+          name: "Washington Driving License",
         },
-    ],
+      ],
+    },
+  ],
 });
 
 export const holder = new VcHolder({
-    ...testingKeys.op,
+  ...testingKeys.op,
 });
 
 export const externalOp = new OpenidProvider({
-    did: testingKeys.op.did,
-    kid: testingKeys.op.kid,
-    signer: externalOpSigner,
-    resolver,
+  did: testingKeys.op.did,
+  kid: testingKeys.op.kid,
+  signer: externalOpSigner,
+  resolver,
 });
 
 export const externalRp = new RelyingParty({
-    did: testingKeys.rp.did,
-    kid: testingKeys.rp.kid,
-    signer: externalRpSigner,
-    ...baseRpConfig,
+  did: testingKeys.rp.did,
+  kid: testingKeys.rp.kid,
+  signer: externalRpSigner,
+  ...baseRpConfig,
 });
 
 // @ts-ignore
 export const externalIssuer = new VcIssuer({
-    did: testingKeys.rp.did,
-    kid: testingKeys.rp.kid,
-    signer: externalRpSigner,
-    ...baseIssuerConfig,
+  did: testingKeys.rp.did,
+  kid: testingKeys.rp.kid,
+  signer: externalRpSigner,
+  ...baseIssuerConfig,
 });
 
 export const externalHolder = new VcHolder({
-    did: testingKeys.op.did,
-    kid: testingKeys.op.kid,
-    signer: externalOpSigner,
+  did: testingKeys.op.did,
+  kid: testingKeys.op.kid,
+  signer: externalOpSigner,
 });

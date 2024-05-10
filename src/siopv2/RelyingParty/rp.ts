@@ -82,7 +82,9 @@ export class RelyingParty {
       : (requestQuery.requestUri = args.requestUri);
 
     return {
-      uri: `siopv2://idtoken${objectToSnakeCaseQueryString(requestQuery)}`,
+      uri: encodeURI(
+        `siopv2://idtoken${objectToSnakeCaseQueryString(requestQuery)}`,
+      ) as `siopv2://idtoken${string}`,
       request: request,
       requestOptions: requestParams,
     };

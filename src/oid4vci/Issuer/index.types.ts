@@ -1,8 +1,8 @@
 import { Resolvable } from "did-resolver";
 import { KeyPairRequirements } from "../../common/index.types";
 
-type CryptographicSuites = "EdDSA";
-type CryptographicMethods = "did:iota" | "did:key";
+type CryptographicSuites = "EdDSA" | "ES256";
+type CryptographicMethods = string[];
 type ProofTypes = "jwt";
 
 export type SupportedCredentials = {

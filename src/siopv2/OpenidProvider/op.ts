@@ -62,9 +62,14 @@ export class OpenidProvider {
     console.log(requestJwt);
 
     const requestOptions = snakeToCamelRecursive(
-      await didJWT.verifyJWT(requestJwt, {
-        resolver: this.resolver,
-      }),
+      await didJWT
+        .verifyJWT(requestJwt, {
+          resolver: this.resolver,
+        })
+        .catch((e) => {
+          console.error(e);
+          throw e;
+        }),
     ).payload as SiopRequest;
     console.log(requestOptions);
     return requestOptions;

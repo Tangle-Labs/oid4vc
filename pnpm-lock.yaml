@@ -18,8 +18,8 @@ dependencies:
     specifier: ^6.0.3
     version: 6.0.3
   did-jwt:
-    specifier: 8.0.4
-    version: 8.0.4
+    specifier: ^7.2.4
+    version: 7.4.7
   did-resolver:
     specifier: ^4.1.0
     version: 4.1.0
@@ -701,8 +701,8 @@ packages:
     resolution: {integrity: sha512-eMk0b9ReBbV23xXU693TAIrLyeO5iTgBZGSJfpqriG8UkYvr/hC9u9pyMlAakDNHWmbhMZCDs6KQO0jzKD8OTw==}
     dev: false
 
-  /@noble/ciphers@0.5.3:
-    resolution: {integrity: sha512-B0+6IIHiqEs3BPMT0hcRmHvEj2QHOLu+uwt+tqDDeVd0oyVzh7BPrDcPjRnV1PV/5LaknXJJQvOuRGR0zQJz+w==}
+  /@noble/ciphers@0.4.1:
+    resolution: {integrity: sha512-QCOA9cgf3Rc33owG0AYBB9wszz+Ul2kramWN8tXG44Gyciud/tbkEqvxRF/IpqQaBpRBNi9f4jdNxqB2CQCIXg==}
     dev: false
 
   /@noble/curves@1.4.0:
@@ -1555,10 +1555,10 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /did-jwt@8.0.4:
-    resolution: {integrity: sha512-KPtG7H+8GgKGMiDqFvOdNy5BBN3hpA+8xV7VygEnpst5oPIqjvcH3rTtnPF55a8bOxIzE2PudKGIXIQhekv7WA==}
+  /did-jwt@7.4.7:
+    resolution: {integrity: sha512-Apz7nIfIHSKWIMaEP5L/K8xkwByvjezjTG0xiqwKdnNj1x8M0+Yasury5Dm/KPltxi2PlGfRPf3IejRKZrT8mQ==}
     dependencies:
-      '@noble/ciphers': 0.5.3
+      '@noble/ciphers': 0.4.1
       '@noble/curves': 1.4.0
       '@noble/hashes': 1.4.0
       '@scure/base': 1.1.6

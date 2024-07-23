@@ -1,15 +1,15 @@
 export const testingKeys = {
     rp: {
         privKeyHex:
-            "ab223f31cdd690eea27e5791cb61ce9a75b3702cedb00344f11971c455d0da24",
-        did: "did:key:z6MkiPkoFtyAEKkmSNPQorAPpA4FGM243AkbrHyQYsR2oG8s",
-        kid: "did:key:z6MkiPkoFtyAEKkmSNPQorAPpA4FGM243AkbrHyQYsR2oG8s#z6MkiPkoFtyAEKkmSNPQorAPpA4FGM243AkbrHyQYsR2oG8s",
+            "e48ad81c8e23939edf1e10bd87e04155901c304a0eaef240a729e6e8645ad66d",
+        did: "did:jwk:eyJrdHkiOiJFQyIsIngiOiIwRW5wZ2NodWJxaG5jNWx6MDNvaGQtN0NoLVo5UmRsY0NWTmRUSDZCdFpBIiwieSI6ImhzcFJqZTNMb3Y0TE1vazdVblhLMGQxR1BtSjFFQmIwOUw0SGN5S01KUEUiLCJjcnYiOiJQLTI1NiJ9",
+        kid: "did:jwk:eyJrdHkiOiJFQyIsIngiOiIwRW5wZ2NodWJxaG5jNWx6MDNvaGQtN0NoLVo5UmRsY0NWTmRUSDZCdFpBIiwieSI6ImhzcFJqZTNMb3Y0TE1vazdVblhLMGQxR1BtSjFFQmIwOUw0SGN5S01KUEUiLCJjcnYiOiJQLTI1NiJ9#0",
     },
     op: {
         privKeyHex:
-            "1fd70d6ed41df0b9353ce1fd381b845e6a2190cd496597500255639757d57661",
-        did: "did:key:z6MkkH6mhaeEDVYEDPf9VzkYjmufGeGbWUiegsxdBEnUoXhP",
-        kid: "did:key:z6MkkH6mhaeEDVYEDPf9VzkYjmufGeGbWUiegsxdBEnUoXhP#z6MkkH6mhaeEDVYEDPf9VzkYjmufGeGbWUiegsxdBEnUoXhP",
+            "b8b37eceffb5f96c3fdec5172e2f74d35a8df6d0c723d38fe1c6c0e6a385d50d",
+        did: "did:jwk:eyJrdHkiOiJFQyIsIngiOiJ2RXFsd2JWSVcyYVpHY1B0bkdVQ1IxelFhQlZPMWtjdVJiVlNTRDVWaEhzIiwieSI6ImNRR0lYZkNJSjZZUDNUSUdPb19taEQ0NTdEUlhCMGMxRlpZSHNIeTlaa3ciLCJjcnYiOiJQLTI1NiJ9",
+        kid: "did:jwk:eyJrdHkiOiJFQyIsIngiOiJ2RXFsd2JWSVcyYVpHY1B0bkdVQ1IxelFhQlZPMWtjdVJiVlNTRDVWaEhzIiwieSI6ImNRR0lYZkNJSjZZUDNUSUdPb19taEQ0NTdEUlhCMGMxRlpZSHNIeTlaa3ciLCJjcnYiOiJQLTI1NiJ9#0",
     },
 };
 

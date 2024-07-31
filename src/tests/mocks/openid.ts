@@ -98,6 +98,7 @@ export const externalOp = new OpenidProvider({
     did: testingKeys.op.did,
     kid: testingKeys.op.kid,
     signer: externalOpSigner,
+    signingAlgorithm: SigningAlgs.ES256,
     resolver,
 });
 
@@ -105,6 +106,7 @@ export const externalRp = new RelyingParty({
     did: testingKeys.rp.did,
     kid: testingKeys.rp.kid,
     signer: externalRpSigner,
+    signingAlgorithm: SigningAlgs.ES256,
     ...baseRpConfig,
 });
 
@@ -113,6 +115,7 @@ export const externalIssuer = new VcIssuer({
     did: testingKeys.rp.did,
     kid: testingKeys.rp.kid,
     signer: externalRpSigner,
+    signingAlgorithm: SigningAlgs.ES256,
     ...baseIssuerConfig,
 });
 
@@ -120,4 +123,5 @@ export const externalHolder = new VcHolder({
     did: testingKeys.op.did,
     kid: testingKeys.op.kid,
     signer: externalOpSigner,
+    signingAlgorithm: SigningAlgs.ES256,
 });

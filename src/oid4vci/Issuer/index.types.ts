@@ -2,7 +2,6 @@ import { Resolvable } from "did-resolver";
 import { KeyPairRequirements } from "../../common/index.types";
 
 type CryptographicSuites = "EdDSA" | "ES256";
-type CryptographicMethods = string[];
 type ProofTypes = "jwt";
 
 export type SupportedCredentials = {
@@ -24,7 +23,7 @@ export type VcIssuerOptions = {
     tokenEndpoint: string;
     batchCredentialEndpoint: string;
     credentialIssuer: string;
-    cryptographicBindingMethodsSupported: CryptographicMethods[];
+    cryptographicBindingMethodsSupported: string[];
     credentialSigningAlgValuesSupported: CryptographicSuites[];
     proofTypesSupported: ProofTypes[];
     store: IIssuerStore<IssuerStoreData>;

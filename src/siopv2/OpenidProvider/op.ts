@@ -96,7 +96,10 @@ export class OpenidProvider {
         return payload;
     }
 
-    async getCredentialsFromRequest(request: string, credentials: any[]) {
+    async getCredentialsFromRequest(
+        request: string,
+        credentials: any[]
+    ): Promise<Record<string, any>> {
         const pex = new PEX();
 
         const requestOptions = await this.getRequestFromOffer(request);

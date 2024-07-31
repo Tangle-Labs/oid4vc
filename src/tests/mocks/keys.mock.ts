@@ -1,15 +1,19 @@
+import { SigningAlgs } from "../../siopv2/siop";
+
 export const testingKeys = {
     rp: {
         privKeyHex:
             "e48ad81c8e23939edf1e10bd87e04155901c304a0eaef240a729e6e8645ad66d",
         did: "did:jwk:eyJrdHkiOiJFQyIsIngiOiIwRW5wZ2NodWJxaG5jNWx6MDNvaGQtN0NoLVo5UmRsY0NWTmRUSDZCdFpBIiwieSI6ImhzcFJqZTNMb3Y0TE1vazdVblhLMGQxR1BtSjFFQmIwOUw0SGN5S01KUEUiLCJjcnYiOiJQLTI1NiJ9",
         kid: "did:jwk:eyJrdHkiOiJFQyIsIngiOiIwRW5wZ2NodWJxaG5jNWx6MDNvaGQtN0NoLVo5UmRsY0NWTmRUSDZCdFpBIiwieSI6ImhzcFJqZTNMb3Y0TE1vazdVblhLMGQxR1BtSjFFQmIwOUw0SGN5S01KUEUiLCJjcnYiOiJQLTI1NiJ9#0",
+        signingAlgorithm: SigningAlgs.ES256,
     },
     op: {
         privKeyHex:
             "b8b37eceffb5f96c3fdec5172e2f74d35a8df6d0c723d38fe1c6c0e6a385d50d",
         did: "did:jwk:eyJrdHkiOiJFQyIsIngiOiJ2RXFsd2JWSVcyYVpHY1B0bkdVQ1IxelFhQlZPMWtjdVJiVlNTRDVWaEhzIiwieSI6ImNRR0lYZkNJSjZZUDNUSUdPb19taEQ0NTdEUlhCMGMxRlpZSHNIeTlaa3ciLCJjcnYiOiJQLTI1NiJ9",
         kid: "did:jwk:eyJrdHkiOiJFQyIsIngiOiJ2RXFsd2JWSVcyYVpHY1B0bkdVQ1IxelFhQlZPMWtjdVJiVlNTRDVWaEhzIiwieSI6ImNRR0lYZkNJSjZZUDNUSUdPb19taEQ0NTdEUlhCMGMxRlpZSHNIeTlaa3ciLCJjcnYiOiJQLTI1NiJ9#0",
+        signingAlgorithm: SigningAlgs.ES256,
     },
 };
 

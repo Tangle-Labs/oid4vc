@@ -9,6 +9,7 @@ import { Resolvable } from "did-resolver";
 import { SiopRequest } from "../index.types";
 import { snakeToCamelRecursive } from "../../utils/object";
 import { normalizePresentationDefinition } from "../../utils/definition";
+import { SigningAlgs } from "../siop";
 
 export class OpenidProvider {
     private did: string;
@@ -16,6 +17,7 @@ export class OpenidProvider {
     private privKeyHex: string;
     private signer: didJWT.Signer;
     private resolver: Resolvable;
+    private alg: SigningAlgs;
 
     constructor(args: OPOptions) {
         this.did = args.did;
@@ -23,6 +25,7 @@ export class OpenidProvider {
         this.privKeyHex = args.privKeyHex;
         this.signer = args.signer ?? buildSigner(this.privKeyHex);
         this.resolver = args.resolver;
+        this.alg = args.signingAlgorithm;
     }
 
     async createIDTokenResponse(request: SiopRequest) {
@@ -32,12 +35,13 @@ export class OpenidProvider {
                 iat: undefined,
                 sub: this.did,
                 exp: Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60,
+                state: request.state,
             },
             {
                 issuer: this.did,
                 signer: this.signer,
             },
-            { alg: "ES256", kid: this.kid }
+            { alg: this.alg, kid: this.kid }
         );
 
         return { id_token: jwt };
@@ -78,10 +82,11 @@ export class OpenidProvider {
             {
                 sub: this.did,
                 aud: request.clientId,
+                state: request.state,
                 vp: { ...vp },
             },
             { issuer: this.did, signer: this.signer },
-            { alg: "ES256", kid: this.kid }
+            { alg: this.alg, kid: this.kid }
         );
         return vpToken;
     }

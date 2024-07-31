@@ -152,7 +152,7 @@ export class VcHolder {
                 nonce: tokenResponse.data.c_nonce,
             },
             { signer: this.signer, issuer: this.holderKeys.did },
-            { alg: "ES256", kid: this.holderKeys.kid }
+            { alg: this.holderKeys.signingAlgorithm, kid: this.holderKeys.kid }
         );
 
         const endpoint =

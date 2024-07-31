@@ -15,6 +15,7 @@ import { TokenRequest } from "../Holder/index.types";
 import * as didJWT from "did-jwt";
 import { buildSigner } from "../../utils/signer";
 import { Resolvable } from "did-resolver";
+import { SigningAlgs } from "../../siopv2/siop";
 
 export class VcIssuer {
     metadata: Omit<VcIssuerOptions, "store" | "did" | "kid" | "privKeyHex">;
@@ -22,6 +23,7 @@ export class VcIssuer {
     signer: didJWT.Signer;
     did: string;
     kid: string;
+    alg: SigningAlgs;
     resolver: Resolvable;
 
     constructor(options: VcIssuerOptions) {
@@ -38,6 +40,7 @@ export class VcIssuer {
         this.did = did;
         this.kid = kid;
         this.resolver = options.resolver;
+        this.alg = options.signingAlgorithm;
     }
 
     transformProofs(proofs: string[], algValues: string[]) {
@@ -126,7 +129,7 @@ export class VcIssuer {
                 signer: this.signer,
                 expiresIn,
             },
-            { alg: "ES256", kid: this.kid }
+            { alg: this.alg, kid: this.kid }
         );
 
         const offer = camelToSnakeCaseRecursive({
@@ -189,7 +192,7 @@ export class VcIssuer {
                 signer: this.signer,
                 expiresIn: 24 * 60 * 60,
             },
-            { alg: "ES256", kid: this.kid }
+            { alg: this.alg, kid: this.kid }
         );
 
         return {

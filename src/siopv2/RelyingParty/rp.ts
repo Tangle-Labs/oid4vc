@@ -4,6 +4,7 @@ import {
     RPOptions,
     AuthResponse,
     SiopRequestResult,
+    SigningAlgs,
 } from "./index.types";
 import * as didJWT from "did-jwt";
 import { PEX } from "@sphereon/pex";
@@ -21,6 +22,7 @@ export class RelyingParty {
     private privKeyHex: string;
     private signer: didJWT.Signer;
     private resolver: Resolvable;
+    private alg: SigningAlgs;
 
     /**
      * Create a new instance of the Relying Party class
@@ -35,6 +37,7 @@ export class RelyingParty {
         this.privKeyHex = args.privKeyHex;
         this.signer = args.signer ?? buildSigner(this.privKeyHex);
         this.resolver = args.resolver;
+        this.alg = args.signingAlgorithm;
     }
 
     /**
@@ -76,7 +79,7 @@ export class RelyingParty {
         const request = await didJWT.createJWT(
             { ...requestParams },
             { issuer: this.did, signer: this.signer },
-            { kid: this.kid, alg: "ES256" }
+            { kid: this.kid, alg: this.alg }
         );
 
         requestBy === "value"
@@ -144,7 +147,7 @@ export class RelyingParty {
                 iss: this.did,
             },
             { issuer: this.did, signer: this.signer },
-            { alg: "ES256", kid: this.kid }
+            { alg: this.alg, kid: this.kid }
         );
         return token;
     }

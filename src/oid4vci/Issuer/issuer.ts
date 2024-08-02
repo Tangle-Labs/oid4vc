@@ -163,7 +163,6 @@ export class VcIssuer {
     }
 
     async createTokenResponse(request: TokenRequest) {
-        console.log(request);
         if (!request.grant_type || !request["pre-authorized_code"])
             throw new Error("invalid_request");
         const { signer, payload } = await didJWT

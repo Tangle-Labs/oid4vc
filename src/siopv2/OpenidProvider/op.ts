@@ -82,7 +82,6 @@ export class OpenidProvider {
             {
                 sub: this.did,
                 aud: request.clientId,
-                state: request.state,
                 vp: { ...vp },
             },
             { issuer: this.did, signer: this.signer },

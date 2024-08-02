@@ -38,6 +38,7 @@ export const oid4vpSuite = (op: OpenidProvider, rp: RelyingParty) => {
                 requestBy: "reference",
                 requestUri: `http://localhost:5999/siop/${id}`,
                 responseType: "vp_token",
+                state: "asdf",
                 presentationDefinition,
             });
             requestByReference = rawRequest.uri;
@@ -52,6 +53,10 @@ export const oid4vpSuite = (op: OpenidProvider, rp: RelyingParty) => {
                 requestByReference,
                 credentials
             );
+        });
+
+        test("get request from reference", async () => {
+            const response = op.getRequestFromOffer(requestByReference);
         });
     };
 };
